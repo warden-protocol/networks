@@ -1,7 +1,7 @@
 {
   "app_name": "wardenprotocold",
-  "app_version": "wardend@1.0.0-e70c5fe2",
-  "genesis_time": "2024-02-21T15:45:34.59802Z",
+  "app_version": "",
+  "genesis_time": "2024-02-28T10:51:25.606007Z",
   "chain_id": "alfama",
   "initial_height": 1,
   "app_hash": null,
@@ -19,21 +19,21 @@
       "accounts": [
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1rxqfzdhfhdungxzlqcm82y9fu7rqz9l3j735hq",
+          "address": "warden1vw3xl9jjp9xy6yek0ap3yzc9f9hqvtam4754mf",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1wfjp8dvprfq84tn6hwfq58lkq23jda3wl0eyy5",
+          "address": "warden1lnga8aj39uww33gwpxlw6lh6az2j3hh32dwjvl",
           "pub_key": null,
           "account_number": "1",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1mw703qd5rlavtlzen58c7x825r08kc7x52clex",
+          "address": "warden1lcps8es72xtszjylp6deypy8qu8whyda26wrmt",
           "pub_key": null,
           "account_number": "2",
           "sequence": "0"
@@ -57,20 +57,11 @@
       },
       "balances": [
         {
-          "address": "warden1rxqfzdhfhdungxzlqcm82y9fu7rqz9l3j735hq",
+          "address": "warden1vw3xl9jjp9xy6yek0ap3yzc9f9hqvtam4754mf",
           "coins": [
             {
               "denom": "uward",
-              "amount": "200000000"
-            }
-          ]
-        },
-        {
-          "address": "warden1wfjp8dvprfq84tn6hwfq58lkq23jda3wl0eyy5",
-          "coins": [
-            {
-              "denom": "uward",
-              "amount": "200000000"
+              "amount": "200200000000"
             }
           ]
         },
@@ -79,16 +70,25 @@
           "coins": [
             {
               "denom": "uward",
-              "amount": "500000000"
+              "amount": "200000500000000"
             }
           ]
         },
         {
-          "address": "warden1mw703qd5rlavtlzen58c7x825r08kc7x52clex",
+          "address": "warden1lnga8aj39uww33gwpxlw6lh6az2j3hh32dwjvl",
           "coins": [
             {
               "denom": "uward",
-              "amount": "200000000"
+              "amount": "200200000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1lcps8es72xtszjylp6deypy8qu8whyda26wrmt",
+          "coins": [
+            {
+              "denom": "uward",
+              "amount": "200200000000"
             }
           ]
         }
@@ -96,7 +96,7 @@
       "supply": [
         {
           "denom": "uward",
-          "amount": "1100000000"
+          "amount": "200601100000000"
         }
       ],
       "denom_metadata": [],
@@ -170,10 +170,10 @@
                 },
                 "min_self_delegation": "1",
                 "delegator_address": "",
-                "validator_address": "wardenvaloper1rxqfzdhfhdungxzlqcm82y9fu7rqz9l3r9n3c3",
+                "validator_address": "wardenvaloper1vw3xl9jjp9xy6yek0ap3yzc9f9hqvtamy9ks5c",
                 "pubkey": {
                   "@type": "/cosmos.crypto.ed25519.PubKey",
-                  "key": "nPtgEF/Kyg3pLRKh26dN4Z4ESg2Po5rtx6tfWkF6ZwE="
+                  "key": "umlXq6tojRLPe6JAfoRO6RqFCbl9q3L6Z67jFZqndIM="
                 },
                 "value": {
                   "denom": "uward",
@@ -181,7 +181,7 @@
                 }
               }
             ],
-            "memo": "3ed3eac98061be3a9b3c193f3d9a1babf0ebdecf@10.1.6.122:26656",
+            "memo": "4b41a522de2124e719227622fa3cb65dd6745d20@10.1.8.90:26656",
             "timeout_height": "0",
             "extension_options": [],
             "non_critical_extension_options": []
@@ -191,7 +191,7 @@
               {
                 "public_key": {
                   "@type": "/cosmos.crypto.secp256k1.PubKey",
-                  "key": "AxYILSksZcKCuKENL0FrNFiCbOGookIXXfUIC4uf2Mi0"
+                  "key": "AphjF1zpcSUwD6aNlF/uH9eYft6fOV65QulLJjsvOgdK"
                 },
                 "mode_info": {
                   "single": {
@@ -210,7 +210,7 @@
             "tip": null
           },
           "signatures": [
-            "SALpHgg2BrdYjWPnVvEMb2SpW2qMNRH2MtbYDcKyFfQcVHwsv6bj0R30nuF090IY/vM89TG7/6EOO0k/2z0VMg=="
+            "gYxr4dVppXzMkUFeYCgRnLg8Rk9xQlvfQjzc9hJAjcx/m58l/YrKsE4dXLpxS7XhJ+sppCb/SS2ZZS4+tZI8pA=="
           ]
         },
         {
@@ -232,10 +232,10 @@
                 },
                 "min_self_delegation": "1",
                 "delegator_address": "",
-                "validator_address": "wardenvaloper1wfjp8dvprfq84tn6hwfq58lkq23jda3ww5mpt9",
+                "validator_address": "wardenvaloper1lnga8aj39uww33gwpxlw6lh6az2j3hh3mkvhrw",
                 "pubkey": {
                   "@type": "/cosmos.crypto.ed25519.PubKey",
-                  "key": "ac+tRYB4hohbHG6Z/l+Oeu9En+uuAFaAA2CS3+xj/C8="
+                  "key": "av4B2f245hdBb/dEvkesWHXsC6XoNCA8PTOe9by3tIQ="
                 },
                 "value": {
                   "denom": "uward",
@@ -243,7 +243,7 @@
                 }
               }
             ],
-            "memo": "e9288ffa89e107f81e54d91c1f55a5ea437a4706@10.1.8.13:26656",
+            "memo": "b892d1a570dcee22d26ccac1f77e5d0f14c9fb9f@10.1.9.57:26656",
             "timeout_height": "0",
             "extension_options": [],
             "non_critical_extension_options": []
@@ -253,7 +253,7 @@
               {
                 "public_key": {
                   "@type": "/cosmos.crypto.secp256k1.PubKey",
-                  "key": "A2oEFVkrX5ke2d13lEBucawHYuXNwDo2IM+27zxQCktf"
+                  "key": "A9pRbjj+B41eGDGlQ1G7Gs3CgjdFR2XJzqX5HuNEecFt"
                 },
                 "mode_info": {
                   "single": {
@@ -272,7 +272,7 @@
             "tip": null
           },
           "signatures": [
-            "gQ3aOB3eK71XrVf+uVhqTRUf3y99I/+zHhIAu0nzHoQoeRYXNCIfnbqTfzd0wL0za3+jw3y67vnOEkNwpNy0Ow=="
+            "ub0YxeknpELeCKUwGAyZNPP7uP43MWMulQ8SAcQs6aBlF+OX/M5HuxLNOdTGcBTRBYhzCQdDiP9L8XwIIKn5vg=="
           ]
         },
         {
@@ -294,10 +294,10 @@
                 },
                 "min_self_delegation": "1",
                 "delegator_address": "",
-                "validator_address": "wardenvaloper1mw703qd5rlavtlzen58c7x825r08kc7x9366kh",
+                "validator_address": "wardenvaloper1lcps8es72xtszjylp6deypy8qu8whydampvx56",
                 "pubkey": {
                   "@type": "/cosmos.crypto.ed25519.PubKey",
-                  "key": "hO/5/1xxA6ic46mifasQa7RA9GT7hN1OJZj/g2w6aNA="
+                  "key": "4v7xG9/h9Dpdt4EtQXg03csm1u4TH0JUjDUg/MHVQOw="
                 },
                 "value": {
                   "denom": "uward",
@@ -305,7 +305,7 @@
                 }
               }
             ],
-            "memo": "e73b132dd5b89a4db32cc3dc55dfca1a6a39bd25@10.1.8.13:26656",
+            "memo": "6d9d5568cb1dc29514ca35b1e382787a8d593c73@10.1.8.120:26656",
             "timeout_height": "0",
             "extension_options": [],
             "non_critical_extension_options": []
@@ -315,7 +315,7 @@
               {
                 "public_key": {
                   "@type": "/cosmos.crypto.secp256k1.PubKey",
-                  "key": "AjAjeO9z0Ig78L0CVbWovfe44/4FRsd2Y2A1oNyn2sn8"
+                  "key": "Amx+aQxuUi2WF2MtfRj2YXx5W1SKtRdFsH65uvJL+awX"
                 },
                 "mode_info": {
                   "single": {
@@ -334,7 +334,7 @@
             "tip": null
           },
           "signatures": [
-            "2UvOtAluULIWe2YsY7V/5u5+h5F4N60HXJlBEu6Au64hA4xrZU6bcj6W+o264Hv/57XqN8nU5cv0GteYgYlXvw=="
+            "AnOpcla6oVO2955xrF2Yidh2cHqB1q0slmm9p+s8t4E6PUwV2ahwFVIdBtfi3qxYj7WxOMkA2CaaFSNpUeDW/g=="
           ]
         }
       ]
@@ -475,7 +475,7 @@
     "staking": {
       "params": {
         "unbonding_time": "1814400s",
-        "max_validators": 100,
+        "max_validators": 10,
         "max_entries": 7,
         "historical_entries": 10000,
         "bond_denom": "uward",
