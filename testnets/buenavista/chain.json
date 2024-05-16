@@ -65,18 +65,18 @@
     "seeds": [],
     "persistent_peers": [
       {
-        "id": "ddb4d92ab6eba8363bab2f3a0d7fa7a970ae437f",
+        "id": "650c66dda5f7aa954f44fd6148a6f32b085ca792",
+        "address": "sentry-0.buenavista.wardenprotocol.org:26656",
+        "provider": "Warden Protocol"
+      },
+      {
+        "id": "7c70120717ef5eae8236162ede6819249bd6587d",
         "address": "sentry-1.buenavista.wardenprotocol.org:26656",
         "provider": "Warden Protocol"
       },
       {
-        "id": "c717995fd56dcf0056ed835e489788af4ffd8fe8",
+        "id": "288116b75c3c710268b5d86182d8dd5e33a6b56f",
         "address": "sentry-2.buenavista.wardenprotocol.org:26656",
-        "provider": "Warden Protocol"
-      },
-      {
-        "id": "e1c61de5d437f35a715ac94b88ec62c482edc166",
-        "address": "sentry-3.buenavista.wardenprotocol.org:26656",
         "provider": "Warden Protocol"
       }
     ]
