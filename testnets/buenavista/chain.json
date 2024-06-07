@@ -74,11 +74,6 @@
         "address": "sentry-1.buenavista.wardenprotocol.org:26656",
         "provider": "Warden Protocol"
       },
-      {
-        "id": "288116b75c3c710268b5d86182d8dd5e33a6b56f",
-        "address": "sentry-2.buenavista.wardenprotocol.org:26656",
-        "provider": "Warden Protocol"
-      }
     ]
   },
   "apis": {
