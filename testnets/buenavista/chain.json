@@ -65,13 +65,13 @@
     "seeds": [],
     "persistent_peers": [
       {
-        "id": "650c66dda5f7aa954f44fd6148a6f32b085ca792",
-        "address": "sentry-0.buenavista.wardenprotocol.org:26656",
+        "id": "92ba004ac4bcd5afbd46bc494ec906579d1f5c1d",
+        "address": "34.249.48.4:26656",
         "provider": "Warden Protocol"
       },
       {
-        "id": "7c70120717ef5eae8236162ede6819249bd6587d",
-        "address": "sentry-1.buenavista.wardenprotocol.org:26656",
+        "id": "ed5781ea586d802b580fdc3515d75026262f4b9d",
+        "address": "52.51.29.142:26656",
         "provider": "Warden Protocol"
       }
     ]
