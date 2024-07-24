@@ -66,12 +66,12 @@
     "persistent_peers": [
       {
         "id": "92ba004ac4bcd5afbd46bc494ec906579d1f5c1d",
-        "address": "52.30.124.80:26656",
+        "address": "54.171.21.98:26656",
         "provider": "Warden Protocol"
       },
       {
         "id": "ed5781ea586d802b580fdc3515d75026262f4b9d",
-        "address": "54.171.21.98:26656",
+        "address": "52.30.124.80:26656",
         "provider": "Warden Protocol"
       }
     ]
