@@ -1,6 +1,6 @@
 {
   "app_name": "wardend",
-  "app_version": "v0.5.0",
+  "app_version": "v0.5.1",
   "genesis_time": "2024-09-04T10:02:35.092348324Z",
   "chain_id": "chiado_10010-1",
   "initial_height": 1,
@@ -168,10 +168,8 @@
       "accounts": [],
       "params": {
         "evm_denom": "award",
-        "enable_create": true,
-        "enable_call": true,
         "extra_eips": [
-          "3855"
+          "ethereum_3855"
         ],
         "chain_config": {
           "homestead_block": "0",
@@ -195,7 +193,7 @@
           "cancun_block": "0"
         },
         "allow_unprotected_txs": false,
-        "active_precompiles": [
+        "active_static_precompiles": [
           "0x0000000000000000000000000000000000000100",
           "0x0000000000000000000000000000000000000400",
           "0x0000000000000000000000000000000000000800",
@@ -204,6 +202,16 @@
           "0x0000000000000000000000000000000000000803",
           "0x0000000000000000000000000000000000000804"
         ],
+        "access_control": {
+          "create": {
+            "access_type": "ACCESS_TYPE_PERMISSIONLESS",
+            "access_control_list": []
+          },
+          "call": {
+            "access_type": "ACCESS_TYPE_PERMISSIONLESS",
+            "access_control_list": []
+          }
+        },
         "evm_channels": [
           "channel-10",
           "channel-31",
@@ -5742,7 +5750,7 @@
         {
           "id": "1",
           "creator": "warden1gp4dakk5sc2f47aludrk8he5r4ln0p2zwm3nq8",
-          "name": "WardenKMS",
+          "name": "OCP KMS",
           "admins": [
             "warden1gp4dakk5sc2f47aludrk8he5r4ln0p2zwm3nq8"
           ],
@@ -5753,7 +5761,7 @@
             "key_req": [],
             "sig_req": []
           },
-          "description": "WardenKMS",
+          "description": "OCP KMS",
           "url": "",
           "keybase_id": null
         }
