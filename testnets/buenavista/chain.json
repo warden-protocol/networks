@@ -65,7 +65,7 @@
     "seeds": [],
     "persistent_peers": [
       {
-        "id": "92ba004ac4bcd5afbd46bc494ec906579d1f5c1d",
+        "id": "d58731396989f994afbb3fed5e491e0848ceef6b",
         "address": "52.30.124.80:26656",
         "provider": "Warden Protocol"
       },
