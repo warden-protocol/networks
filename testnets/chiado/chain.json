@@ -68,6 +68,11 @@
         "id": "2d2c7af1c2d28408f437aef3d034087f40b85401",
         "address": "52.51.132.79:26656",
         "provider": "Warden Protocol"
+      },
+      {
+        "id": "5461e7642520a1f8427ffaa57f9d39cf345fcd47",
+        "address": "54.72.190.0:26656",
+        "provider": "Warden Protocol"
       }
     ],
     "persistent_peers": [
