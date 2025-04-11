@@ -106,6 +106,12 @@
         "address": "https://grpc.chiado.wardenprotocol.org/",
         "provider": "Warden Protocol"
       }
+    ],
+    "evm": [
+      {
+        "address": "https://evm.chiado.wardenprotocol.org/",
+        "provider": "Warden Protocol"
+      }
     ]
   },
   "logo_URIs": {
