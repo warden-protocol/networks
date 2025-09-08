@@ -122,7 +122,7 @@ jobs:
           FAILED_FILES=""
           VALIDATED_COUNT=0
           NETWORKS_VALIDATED="mainnet"
-          DOCKER_IMAGE="ghcr.io/warden-protocol/wardend:${{ env.WARDEND_VERSION }}"
+          DOCKER_IMAGE="ghcr.io/warden-protocol/wardenprotocol/wardend:${{ env.WARDEND_VERSION }}"
 
           # Check if genesis file exists
           genesis_file="mainnet/init_genesis.json"
