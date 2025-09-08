@@ -3,7 +3,7 @@ name: Validate GenTx Files
 on:
   pull_request:
     paths:
-      - 'mainnet/gentx/*.json'
+      - 'mainnet/*/gentx/*.json'
   workflow_dispatch:
     inputs:
       network:
@@ -67,14 +67,16 @@ jobs:
             network="${{ github.event.inputs.network }}"
             echo "Manual workflow dispatch for network: $network"
             if [ -d "mainnet/$network/gentx" ]; then
-              GENTX_FILES=$(find mainnet/$network/gentx -name "*.json" 2>/dev/null || echo "")
+              GENTX_FILES=$(find mainnet/$network/gentx -name "*.json" \
+                2>/dev/null || echo "")
             else
               echo "Network directory not found: mainnet/$network/gentx"
               GENTX_FILES=""
             fi
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             # PR: get changed mainnet files only
-            echo "Pull request detected, checking changed mainnet GenTx files..."
+            msg="Pull request detected, checking changed mainnet GenTx files..."
+            echo "$msg"
             base_ref="origin/${{ github.base_ref }}"
             sha="${{ github.sha }}"
             GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
@@ -82,7 +84,8 @@ jobs:
           else
             # Fallback: validate all mainnet GenTx files
             echo "Validating all mainnet GenTx files..."
-            GENTX_FILES=$(find mainnet/*/gentx -name "*.json" 2>/dev/null || echo "")
+            GENTX_FILES=$(find mainnet/*/gentx -name "*.json" \
+              2>/dev/null || echo "")
           fi
 
           if [ -z "$GENTX_FILES" ]; then
@@ -121,7 +124,7 @@ jobs:
         if: steps.get-files.outputs.has-files == 'true'
         run: |
           cd /tmp/gentx-validation
-          
+
           echo "🚀 Starting GenTx validation..."
           echo "==========================================="
 
@@ -138,7 +141,8 @@ jobs:
               continue
             fi
 
-            # Extract network name from path (e.g., mainnet/chiado/gentx/file.json -> chiado)
+            # Extract network name from path
+            # (e.g., mainnet/chiado/gentx/file.json -> chiado)
             network=$(echo "$gentx_file" | cut -d'/' -f2)
             genesis_file="mainnet/${network}/genesis.json"
 
@@ -151,7 +155,8 @@ jobs:
             if [ ! -f "$GITHUB_WORKSPACE/$genesis_file" ]; then
               echo "   ❌ Genesis file not found: $genesis_file"
               VALIDATION_FAILED=true
-              FAILED_FILES="$FAILED_FILES\n  - $gentx_file (genesis not found)"
+              failed_msg="$gentx_file (genesis not found)"
+              FAILED_FILES="$FAILED_FILES\n  - $failed_msg"
               continue
             fi
 
@@ -162,7 +167,7 @@ jobs:
             if ./check-genesis "$GITHUB_WORKSPACE/$gentx_file"; then
               echo "   ✅ PASSED"
               VALIDATED_COUNT=$((VALIDATED_COUNT + 1))
-              
+
               # Track unique networks
               if [[ ! "$NETWORKS_VALIDATED" =~ $network ]]; then
                 if [ -z "$NETWORKS_VALIDATED" ]; then
@@ -200,7 +205,7 @@ jobs:
 
       - name: Upload validation logs
         if: always() && steps.get-files.outputs.has-files == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gentx-validation-logs-${{ github.run_id }}
           path: |
@@ -209,7 +214,8 @@ jobs:
           if-no-files-found: ignore
 
       - name: Comment on PR (Success)
-        if: github.event_name == 'pull_request' && success() && steps.get-files.outputs.has-files == 'true'
+        if: github.event_name == 'pull_request' && success() && \
+            steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -255,21 +261,23 @@ jobs:
             }
 
       - name: Comment on PR (Failure)
-        if: github.event_name == 'pull_request' && failure() && steps.get-files.outputs.has-files == 'true'
+        if: github.event_name == 'pull_request' && failure() && \
+            steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
-            const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
+            const baseUrl = context.payload.repository.html_url;
+            const runUrl = `${baseUrl}/actions/runs/${context.runId}`;
 
             const commentBody = `## ❌ GenTx Validation Results
 
             **Status**: ❌ **FAILED**
 
-            One or more GenTx files failed validation. Check the logs for details:
-            [View Workflow Run](${runUrl})
+            One or more GenTx files failed validation.
+            Check the logs for details: [View Workflow Run](${runUrl})
 
             Common issues to check:
-            - Insufficient fees (minimum: 180000000000000000 award)
+            - Insufficient fees (minimum: 1.8e17 award)
             - Invalid JSON format
             - Missing required fields
             - Network configuration mismatch
@@ -285,7 +293,8 @@ jobs:
             });
 
       - name: Comment on PR (No files)
-        if: github.event_name == 'pull_request' && steps.get-files.outputs.has-files == 'false'
+        if: github.event_name == 'pull_request' && \
+            steps.get-files.outputs.has-files == 'false'
         uses: actions/github-script@v6
         with:
           script: |
