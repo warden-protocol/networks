@@ -33,16 +33,11 @@ jobs:
       - name: Pull wardend Docker image
         run: |
           echo "Pulling wardend Docker image for ${{ env.WARDEND_VERSION }}..."
-          
           # Pull the wardend Docker image
           docker_image="ghcr.io/warden-protocol/wardenprotocol/wardend:${{ env.WARDEND_VERSION }}"
           echo "Pulling: $docker_image"
           docker pull "$docker_image"
-          
           echo "✅ Pulled wardend Docker image"
-          
-          # Verify the image works
-          docker run --rm "$docker_image" version --long
 
       - name: Get mainnet GenTx files to validate
         id: get-files
@@ -161,7 +156,7 @@ jobs:
             if docker run --rm \
                 -v "$TEMP_DIR:/workspace" \
                 -w /workspace \
-                --entrypoint="" \
+                --entrypoint="/bin/bash" \
                 "$DOCKER_IMAGE" \
                 ./check-genesis "$(basename $gentx_file)"; then
               echo "   ✅ PASSED"
