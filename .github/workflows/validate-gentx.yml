@@ -93,31 +93,50 @@ jobs:
           mkdir -p /tmp/gentx-validation
           cd /tmp/gentx-validation
 
-          # Copy the check-genesis tool
+          # Copy the check-genesis tool source
           cp -r "$GITHUB_WORKSPACE/utils/check-genesis" ./
           cd check-genesis
 
-          # Build the tool
+          echo "Building from Go module in $(pwd)..."
+          
+          # List files to debug
+          echo "Files in check-genesis directory:"
+          ls -la
+          
+          # Build the tool (build the main module, not specific file)
           go mod tidy
-          go build -o ../check-genesis ./check-genesis.go
+          go build -o ../check-genesis .
 
-          echo "✅ Built check-genesis tool"
-
-          # Test that the check-genesis tool is created and available
+          echo "✅ Built check-genesis tool, checking result..."
+          
+          # Move back to parent directory to test the binary
           cd ..
+          
+          echo "Files in validation directory:"
+          ls -la
+          
+          # Test that the check-genesis tool is created and available
           if [ ! -f "./check-genesis" ]; then
-            echo "❌ Error: check-genesis binary not found!"
+            echo "❌ Error: check-genesis binary not found at $(pwd)/check-genesis"
+            echo "Directory contents:"
+            ls -la
             exit 1
           fi
 
           if [ ! -x "./check-genesis" ]; then
             echo "❌ Error: check-genesis binary is not executable!"
-            exit 1
+            chmod +x ./check-genesis
+            echo "✅ Made check-genesis executable"
           fi
 
-          # Test that the tool can be executed (check help/version output)
-          if ! ./check-genesis --help >/dev/null 2>&1; then
-            echo "❌ Error: check-genesis tool cannot be executed properly!"
+          # Test that the tool runs (it should show usage when run without args)
+          echo "Testing check-genesis execution..."
+          if ./check-genesis 2>&1 | grep -q "Usage:"; then
+            echo "✅ check-genesis tool responds correctly to no arguments"
+          else
+            echo "❌ Error: check-genesis tool does not show expected usage message"
+            echo "Tool output:"
+            ./check-genesis 2>&1 || true
             exit 1
           fi
 
