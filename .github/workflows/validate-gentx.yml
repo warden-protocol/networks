@@ -103,6 +103,26 @@ jobs:
 
           echo "✅ Built check-genesis tool"
 
+          # Test that the check-genesis tool is created and available
+          cd ..
+          if [ ! -f "./check-genesis" ]; then
+            echo "❌ Error: check-genesis binary not found!"
+            exit 1
+          fi
+
+          if [ ! -x "./check-genesis" ]; then
+            echo "❌ Error: check-genesis binary is not executable!"
+            exit 1
+          fi
+
+          # Test that the tool can be executed (check help/version output)
+          if ! ./check-genesis --help >/dev/null 2>&1; then
+            echo "❌ Error: check-genesis tool cannot be executed properly!"
+            exit 1
+          fi
+
+          echo "✅ Verified check-genesis tool is available and executable"
+
       - name: Validate all GenTx files
         if: steps.get-files.outputs.has-files == 'true'
         run: |
@@ -143,9 +163,8 @@ jobs:
             echo "   Genesis: $genesis_file"
 
             # Create a temporary directory for this validation
-            TEMP_DIR="/tmp/gentx-validation/$(basename $gentx_file .json)"
+            TEMP_DIR="/tmp/gentx-validation"
             mkdir -p "$TEMP_DIR"
-            
             # Copy required files to temp directory
             cp ./init_genesis.json "$TEMP_DIR/"
             cp "$GITHUB_WORKSPACE/$gentx_file" "$TEMP_DIR/"
