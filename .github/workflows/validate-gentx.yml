@@ -1,3 +1,4 @@
+---
 name: Validate GenTx Files
 
 on:
@@ -33,25 +34,26 @@ jobs:
         run: |
           echo "Installing wardend ${{ env.WARDEND_VERSION }}..."
 
-          # Try to download pre-built binary first
+          # Download pre-built binary from releases
           base_url="https://github.com/warden-protocol/wardenprotocol"
           release_url="${base_url}/releases/download/${{ env.WARDEND_VERSION }}"
           binary_url="${release_url}/wardend_linux_amd64"
 
-          if curl -sL "$binary_url" -o /tmp/wardend; then
-            chmod +x /tmp/wardend
-            sudo mv /tmp/wardend /usr/local/bin/wardend
-            echo "✅ Installed wardend binary"
-          else
-            echo "Pre-built binary not found, building from source..."
-            repo_url="https://github.com/warden-protocol/wardenprotocol.git"
-            git clone "$repo_url" /tmp/wardenprotocol
-            cd /tmp/wardenprotocol
-            git checkout ${{ env.WARDEND_VERSION }}
-            make build
-            sudo cp build/wardend /usr/local/bin/wardend
-            echo "✅ Built and installed wardend from source"
+          echo "Downloading from: $binary_url"
+          curl -sL "$binary_url" -o /tmp/wardend
+
+          # Verify download was successful
+          if [ ! -f /tmp/wardend ] || [ ! -s /tmp/wardend ]; then
+            echo "❌ Failed to download wardend binary from releases"
+            echo "Please check that version ${{ env.WARDEND_VERSION }} exists"
+            echo "at: $binary_url"
+            exit 1
           fi
+
+          # Install binary
+          chmod +x /tmp/wardend
+          sudo mv /tmp/wardend /usr/local/bin/wardend
+          echo "✅ Installed wardend binary"
 
           # Verify installation
           wardend version --long
