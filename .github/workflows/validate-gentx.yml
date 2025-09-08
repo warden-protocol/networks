@@ -12,105 +12,17 @@ on:
         default: ''
 
 env:
-  GO_VERSION: '1.21'
+  GO_VERSION: '1.24'
   WARDEND_VERSION: 'v0.7.0-rc3'
 
 jobs:
-  detect-changes:
+  validate-gentx:
     runs-on: ubuntu-latest
-    outputs:
-      gentx-files: ${{ steps.changes.outputs.gentx-files }}
-      matrix: ${{ steps.generate-matrix.outputs.matrix }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Get changed gentx files
-        id: changes
-        run: |
-          echo "Getting changed mainnet gentx files..."
-
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
-             [ -n "${{ github.event.inputs.network }}" ]; then
-            # Manual dispatch with specific network
-            network="${{ github.event.inputs.network }}"
-            echo "Manual workflow dispatch for network: $network"
-            GENTX_FILES=$(find mainnet/$network/gentx -name "*.json" \
-              2>/dev/null | tr '\n' ' ' || echo "")
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            # PR: get changed mainnet files only
-            echo "Pull request detected, checking changed mainnet files..."
-            base_ref="origin/${{ github.base_ref }}"
-            sha="${{ github.sha }}"
-            GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
-              grep -E 'mainnet/gentx/.*\.json$' | tr '\n' ' ' || echo "")
-          fi
-
-          echo "Found gentx files: $GENTX_FILES"
-          echo "gentx-files=$GENTX_FILES" >> $GITHUB_OUTPUT
-
-      - name: Generate test matrix
-        id: generate-matrix
-        run: |
-          GENTX_FILES="${{ steps.changes.outputs.gentx-files }}"
-
-          if [ -z "$GENTX_FILES" ]; then
-            echo "No gentx files to validate"
-            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Build matrix for mainnet networks only
-          matrix_items=""
-
-          for file in $GENTX_FILES; do
-            if [ -f "$file" ]; then
-              # Extract network name from mainnet path
-              # (e.g., mainnet/chiado/gentx/file.json -> chiado)
-              network=$(echo "$file" | cut -d'/' -f2)
-              network_type="mainnet"
-
-              # Find the corresponding genesis file
-              genesis_file="mainnet/${network}/genesis.json"
-
-              if [ -f "$genesis_file" ]; then
-                if [ -n "$matrix_items" ]; then
-                  matrix_items="${matrix_items},"
-                fi
-                item="{\"gentx_file\":\"$file\""
-                item="${item},\"network\":\"$network\""
-                item="${item},\"network_type\":\"$network_type\""
-                item="${item},\"genesis_file\":\"$genesis_file\"}"
-                matrix_items="${matrix_items}${item}"
-              else
-                echo "Warning: Genesis file not found for network $network"
-                echo "Expected at: $genesis_file"
-              fi
-            fi
-          done
-
-          if [ -z "$matrix_items" ]; then
-            echo "No valid gentx files found with corresponding genesis files"
-            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
-          else
-            echo "matrix={\"include\":[$matrix_items]}" >> $GITHUB_OUTPUT
-          fi
-
-          echo "Generated matrix: {\"include\":[$matrix_items]}"
-
-  validate-gentx:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.gentx-files != ''
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -144,25 +56,55 @@ jobs:
           # Verify installation
           wardend version --long
 
-      - name: Prepare test environment
+      - name: Get mainnet GenTx files to validate
+        id: get-files
         run: |
-          echo "Preparing test environment for network: ${{ matrix.network }}"
-          echo "GenTx file: ${{ matrix.gentx_file }}"
-          echo "Genesis file: ${{ matrix.genesis_file }}"
+          echo "Getting mainnet GenTx files to validate..."
 
-          # Create working directory
-          mkdir -p /tmp/gentx-validation
-          cd /tmp/gentx-validation
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ -n "${{ github.event.inputs.network }}" ]; then
+            # Manual dispatch with specific network
+            network="${{ github.event.inputs.network }}"
+            echo "Manual workflow dispatch for network: $network"
+            if [ -d "mainnet/$network/gentx" ]; then
+              GENTX_FILES=$(find mainnet/$network/gentx -name "*.json" 2>/dev/null || echo "")
+            else
+              echo "Network directory not found: mainnet/$network/gentx"
+              GENTX_FILES=""
+            fi
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR: get changed mainnet files only
+            echo "Pull request detected, checking changed mainnet GenTx files..."
+            base_ref="origin/${{ github.base_ref }}"
+            sha="${{ github.sha }}"
+            GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
+              grep -E 'mainnet/.*/gentx/.*\.json$' || echo "")
+          else
+            # Fallback: validate all mainnet GenTx files
+            echo "Validating all mainnet GenTx files..."
+            GENTX_FILES=$(find mainnet/*/gentx -name "*.json" 2>/dev/null || echo "")
+          fi
 
-          # Copy the genesis file as init_genesis.json (required by tool)
-          workspace="${GITHUB_WORKSPACE}/${{ matrix.genesis_file }}"
-          cp "$workspace" ./init_genesis.json
+          if [ -z "$GENTX_FILES" ]; then
+            echo "No GenTx files found to validate"
+            echo "has-files=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
-          echo "✅ Prepared test environment"
+          echo "Found GenTx files to validate:"
+          echo "$GENTX_FILES" | while read -r file; do
+            echo "  - $file"
+          done
+
+          # Store files for later steps
+          echo "$GENTX_FILES" > /tmp/gentx-files.txt
+          echo "has-files=true" >> $GITHUB_OUTPUT
 
       - name: Build check-genesis tool
+        if: steps.get-files.outputs.has-files == 'true'
         run: |
           echo "Building check-genesis tool..."
+          mkdir -p /tmp/gentx-validation
           cd /tmp/gentx-validation
 
           # Copy the check-genesis tool
@@ -175,38 +117,99 @@ jobs:
 
           echo "✅ Built check-genesis tool"
 
-      - name: Validate GenTx
+      - name: Validate all GenTx files
+        if: steps.get-files.outputs.has-files == 'true'
         run: |
           cd /tmp/gentx-validation
-
-          echo "🚀 Starting validation for ${{ matrix.gentx_file }}..."
-          echo "Network: ${{ matrix.network }} (${{ matrix.network_type }})"
-          echo "Genesis file: ${{ matrix.genesis_file }}"
+          
+          echo "🚀 Starting GenTx validation..."
           echo "==========================================="
 
-          # Run the validation
-          gentx_path="$GITHUB_WORKSPACE/${{ matrix.gentx_file }}"
-          if ./check-genesis "$gentx_path"; then
+          # Read the list of files to validate
+          GENTX_FILES=$(cat /tmp/gentx-files.txt)
+          VALIDATION_FAILED=false
+          FAILED_FILES=""
+          VALIDATED_COUNT=0
+          NETWORKS_VALIDATED=""
+
+          for gentx_file in $GENTX_FILES; do
+            if [ ! -f "$GITHUB_WORKSPACE/$gentx_file" ]; then
+              echo "⚠️  File not found: $gentx_file (skipping)"
+              continue
+            fi
+
+            # Extract network name from path (e.g., mainnet/chiado/gentx/file.json -> chiado)
+            network=$(echo "$gentx_file" | cut -d'/' -f2)
+            genesis_file="mainnet/${network}/genesis.json"
+
             echo ""
-            echo "✅ GenTx validation PASSED for ${{ matrix.gentx_file }}"
-          else
+            echo "📁 Validating: $gentx_file"
+            echo "   Network: $network"
+            echo "   Genesis: $genesis_file"
+
+            # Check if genesis file exists
+            if [ ! -f "$GITHUB_WORKSPACE/$genesis_file" ]; then
+              echo "   ❌ Genesis file not found: $genesis_file"
+              VALIDATION_FAILED=true
+              FAILED_FILES="$FAILED_FILES\n  - $gentx_file (genesis not found)"
+              continue
+            fi
+
+            # Copy genesis file for validation
+            cp "$GITHUB_WORKSPACE/$genesis_file" ./init_genesis.json
+
+            # Run validation
+            if ./check-genesis "$GITHUB_WORKSPACE/$gentx_file"; then
+              echo "   ✅ PASSED"
+              VALIDATED_COUNT=$((VALIDATED_COUNT + 1))
+              
+              # Track unique networks
+              if [[ ! "$NETWORKS_VALIDATED" =~ $network ]]; then
+                if [ -z "$NETWORKS_VALIDATED" ]; then
+                  NETWORKS_VALIDATED="$network"
+                else
+                  NETWORKS_VALIDATED="$NETWORKS_VALIDATED, $network"
+                fi
+              fi
+            else
+              echo "   ❌ FAILED"
+              VALIDATION_FAILED=true
+              FAILED_FILES="$FAILED_FILES\n  - $gentx_file"
+            fi
+          done
+
+          echo ""
+          echo "==========================================="
+          echo "📊 Validation Summary:"
+          echo "   Files validated: $VALIDATED_COUNT"
+          echo "   Networks: $NETWORKS_VALIDATED"
+
+          if [ "$VALIDATION_FAILED" = "true" ]; then
+            echo "   Status: ❌ FAILED"
             echo ""
-            echo "❌ GenTx validation FAILED for ${{ matrix.gentx_file }}"
+            echo "Failed files:"
+            echo -e "$FAILED_FILES"
             exit 1
+          else
+            echo "   Status: ✅ ALL PASSED"
           fi
 
+          # Store results for PR comment
+          echo "validated_count=$VALIDATED_COUNT" >> $GITHUB_ENV
+          echo "networks_validated=$NETWORKS_VALIDATED" >> $GITHUB_ENV
+
       - name: Upload validation logs
-        if: always()
+        if: always() && steps.get-files.outputs.has-files == 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: validation-logs-${{ matrix.network }}-${{ github.run_id }}
+          name: gentx-validation-logs-${{ github.run_id }}
           path: |
             /tmp/gentx-validation/logs.txt
             /tmp/gentx-validation/.warden/logs/
           if-no-files-found: ignore
 
       - name: Comment on PR (Success)
-        if: github.event_name == 'pull_request' && success()
+        if: github.event_name == 'pull_request' && success() && steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -218,21 +221,19 @@ jobs:
 
             const botComment = comments.find(comment =>
               comment.user.type === 'Bot' &&
-              comment.body.includes('GenTx Validation Results') &&
-              comment.body.includes('${{ matrix.gentx_file }}')
+              comment.body.includes('GenTx Validation Results')
             );
 
-            const file = '${{ matrix.gentx_file }}';
-            const network = '${{ matrix.network }}';
-            const networkType = '${{ matrix.network_type }}';
+            const validatedCount = process.env.validated_count || '0';
+            const networksValidated = process.env.networks_validated || 'none';
 
             const commentBody = `## ✅ GenTx Validation Results
 
-            **File**: \`${file}\`
-            **Network**: \`${network}\` (\`${networkType}\`)
-            **Status**: ✅ **PASSED**
+            **Status**: ✅ **ALL PASSED**
+            **Files validated**: ${validatedCount}
+            **Networks**: ${networksValidated}
 
-            The GenTx file has been successfully validated!
+            All GenTx files have been successfully validated!
 
             ---
             <sub>🤖 Auto-generated by GenTx validation workflow</sub>`;
@@ -254,23 +255,18 @@ jobs:
             }
 
       - name: Comment on PR (Failure)
-        if: github.event_name == 'pull_request' && failure()
+        if: github.event_name == 'pull_request' && failure() && steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
-            const file = '${{ matrix.gentx_file }}';
-            const network = '${{ matrix.network }}';
-            const networkType = '${{ matrix.network_type }}';
-            const runUrl = context.payload.repository.html_url;
+            const runUrl = `${context.payload.repository.html_url}/actions/runs/${context.runId}`;
 
             const commentBody = `## ❌ GenTx Validation Results
 
-            **File**: \`${file}\`
-            **Network**: \`${network}\` (\`${networkType}\`)
             **Status**: ❌ **FAILED**
 
-            The GenTx file validation failed. Check the logs for details:
-            [View Workflow Run](${runUrl}/actions/runs/${context.runId})
+            One or more GenTx files failed validation. Check the logs for details:
+            [View Workflow Run](${runUrl})
 
             Common issues to check:
             - Insufficient fees (minimum: 180000000000000000 award)
@@ -288,33 +284,23 @@ jobs:
               body: commentBody
             });
 
-  summary:
-    needs: [detect-changes, validate-gentx]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validation Summary
-        run: |
-          echo "## GenTx Validation Summary"
-          echo ""
+      - name: Comment on PR (No files)
+        if: github.event_name == 'pull_request' && steps.get-files.outputs.has-files == 'false'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const commentBody = `## 🔍 GenTx Validation Results
 
-          if [ "${{ needs.detect-changes.outputs.gentx-files }}" = "" ]; then
-            echo "🔍 No GenTx files were changed in this PR"
-            echo "validation_needed=false" >> $GITHUB_ENV
-          elif [ "${{ needs.validate-gentx.result }}" = "success" ]; then
-            echo "✅ All GenTx validations passed!"
-            echo "validation_result=success" >> $GITHUB_ENV
-          elif [ "${{ needs.validate-gentx.result }}" = "failure" ]; then
-            echo "❌ One or more GenTx validations failed"
-            echo "validation_result=failure" >> $GITHUB_ENV
-            exit 1
-          else
-            echo "⚠️ GenTx validation was skipped or cancelled"
-            echo "validation_result=skipped" >> $GITHUB_ENV
-          fi
+            **Status**: ℹ️ **NO FILES TO VALIDATE**
 
-      - name: Set workflow status
-        if: needs.validate-gentx.result == 'failure'
-        run: |
-          echo "GenTx validation failed"
-          exit 1
+            No mainnet GenTx files were modified in this PR.
+
+            ---
+            <sub>🤖 Auto-generated by GenTx validation workflow</sub>`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
