@@ -30,33 +30,19 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Install wardend
+      - name: Pull wardend Docker image
         run: |
-          echo "Installing wardend ${{ env.WARDEND_VERSION }}..."
-
-          # Download pre-built binary from releases
-          base_url="https://github.com/warden-protocol/wardenprotocol"
-          release_url="${base_url}/releases/download/${{ env.WARDEND_VERSION }}"
-          binary_url="${release_url}/wardend-${{ env.WARDEND_VERSION }}-linux-amd64"
-
-          echo "Downloading from: $binary_url"
-          curl -sL "$binary_url" -o /tmp/wardend
-
-          # Verify download was successful
-          if [ ! -f /tmp/wardend ] || [ ! -s /tmp/wardend ]; then
-            echo "❌ Failed to download wardend binary from releases"
-            echo "Please check that version ${{ env.WARDEND_VERSION }} exists"
-            echo "at: $binary_url"
-            exit 1
-          fi
-
-          # Install binary
-          chmod +x /tmp/wardend
-          sudo mv /tmp/wardend /usr/local/bin/wardend
-          echo "✅ Installed wardend binary"
-
-          # Verify installation
-          wardend version --long
+          echo "Pulling wardend Docker image for ${{ env.WARDEND_VERSION }}..."
+          
+          # Pull the wardend Docker image
+          docker_image="ghcr.io/warden-protocol/wardend:${{ env.WARDEND_VERSION }}"
+          echo "Pulling: $docker_image"
+          docker pull "$docker_image"
+          
+          echo "✅ Pulled wardend Docker image"
+          
+          # Verify the image works
+          docker run --rm "$docker_image" version --long
 
       - name: Get mainnet GenTx files to validate
         id: get-files
@@ -136,6 +122,7 @@ jobs:
           FAILED_FILES=""
           VALIDATED_COUNT=0
           NETWORKS_VALIDATED="mainnet"
+          DOCKER_IMAGE="ghcr.io/warden-protocol/wardend:${{ env.WARDEND_VERSION }}"
 
           # Check if genesis file exists
           genesis_file="mainnet/init_genesis.json"
@@ -160,8 +147,23 @@ jobs:
             echo "   Network: mainnet"
             echo "   Genesis: $genesis_file"
 
-            # Run validation
-            if ./check-genesis "$GITHUB_WORKSPACE/$gentx_file"; then
+            # Create a temporary directory for this validation
+            TEMP_DIR="/tmp/gentx-validation/$(basename $gentx_file .json)"
+            mkdir -p "$TEMP_DIR"
+            
+            # Copy required files to temp directory
+            cp ./init_genesis.json "$TEMP_DIR/"
+            cp "$GITHUB_WORKSPACE/$gentx_file" "$TEMP_DIR/"
+            cp ./check-genesis "$TEMP_DIR/"
+            
+            # Run validation using Docker with volume mount
+            # Mount the temp directory and run the check-genesis tool inside the container
+            if docker run --rm \
+                -v "$TEMP_DIR:/workspace" \
+                -w /workspace \
+                --entrypoint="" \
+                "$DOCKER_IMAGE" \
+                ./check-genesis "$(basename $gentx_file)"; then
               echo "   ✅ PASSED"
               VALIDATED_COUNT=$((VALIDATED_COUNT + 1))
             else
@@ -169,6 +171,9 @@ jobs:
               VALIDATION_FAILED=true
               FAILED_FILES="$FAILED_FILES\n  - $gentx_file"
             fi
+            
+            # Clean up temp directory
+            rm -rf "$TEMP_DIR"
           done
 
           echo ""
@@ -202,7 +207,10 @@ jobs:
           if-no-files-found: ignore
 
       - name: Comment on PR (Success)
-        if: github.event_name == 'pull_request' && success() && steps.get-files.outputs.has-files == 'true'
+        if: >
+          github.event_name == 'pull_request' && 
+          success() && 
+          steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -248,7 +256,10 @@ jobs:
             }
 
       - name: Comment on PR (Failure)
-        if: github.event_name == 'pull_request' && failure() && steps.get-files.outputs.has-files == 'true'
+        if: >
+          github.event_name == 'pull_request' && 
+          failure() && 
+          steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -279,7 +290,9 @@ jobs:
             });
 
       - name: Comment on PR (No files)
-        if: github.event_name == 'pull_request' && steps.get-files.outputs.has-files == 'false'
+        if: >
+          github.event_name == 'pull_request' && 
+          steps.get-files.outputs.has-files == 'false'
         uses: actions/github-script@v6
         with:
           script: |
