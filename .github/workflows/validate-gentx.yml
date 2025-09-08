@@ -202,8 +202,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Comment on PR (Success)
-        if: github.event_name == 'pull_request' && success() && \
-            steps.get-files.outputs.has-files == 'true'
+        if: github.event_name == 'pull_request' && success() && steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -249,8 +248,7 @@ jobs:
             }
 
       - name: Comment on PR (Failure)
-        if: github.event_name == 'pull_request' && failure() && \
-            steps.get-files.outputs.has-files == 'true'
+        if: github.event_name == 'pull_request' && failure() && steps.get-files.outputs.has-files == 'true'
         uses: actions/github-script@v6
         with:
           script: |
@@ -281,8 +279,7 @@ jobs:
             });
 
       - name: Comment on PR (No files)
-        if: github.event_name == 'pull_request' && \
-            steps.get-files.outputs.has-files == 'false'
+        if: github.event_name == 'pull_request' && steps.get-files.outputs.has-files == 'false'
         uses: actions/github-script@v6
         with:
           script: |
