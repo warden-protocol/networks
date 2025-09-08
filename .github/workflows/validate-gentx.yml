@@ -45,7 +45,7 @@ jobs:
             base_ref="origin/${{ github.base_ref }}"
             sha="${{ github.sha }}"
             GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
-              grep -E 'mainnet/.*/gentx/.*\.json$' | tr '\n' ' ' || echo "")
+              grep -E 'mainnet/gentx/.*\.json$' | tr '\n' ' ' || echo "")
           fi
 
           echo "Found gentx files: $GENTX_FILES"
