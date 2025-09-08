@@ -37,7 +37,7 @@ jobs:
           # Download pre-built binary from releases
           base_url="https://github.com/warden-protocol/wardenprotocol"
           release_url="${base_url}/releases/download/${{ env.WARDEND_VERSION }}"
-          binary_url="${release_url}/wardend_linux_amd64"
+          binary_url="${release_url}/wardend-${{ env.WARDEND_VERSION }}-linux-amd64"
 
           echo "Downloading from: $binary_url"
           curl -sL "$binary_url" -o /tmp/wardend
