@@ -35,7 +35,7 @@ jobs:
           echo "Pulling wardend Docker image for ${{ env.WARDEND_VERSION }}..."
           
           # Pull the wardend Docker image
-          docker_image="ghcr.io/warden-protocol/wardend:${{ env.WARDEND_VERSION }}"
+          docker_image="ghcr.io/warden-protocol/wardenprotocol/wardend:${{ env.WARDEND_VERSION }}"
           echo "Pulling: $docker_image"
           docker pull "$docker_image"
           
