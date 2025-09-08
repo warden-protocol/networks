@@ -3,7 +3,7 @@ name: Validate GenTx Files
 on:
   pull_request:
     paths:
-      - 'mainnet/*/gentx/*.json'
+      - 'mainnet/gentx/*.json'
   workflow_dispatch:
     inputs:
       network:
@@ -63,14 +63,14 @@ jobs:
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
              [ -n "${{ github.event.inputs.network }}" ]; then
-            # Manual dispatch with specific network
+            # Manual dispatch with specific network (only mainnet supported)
             network="${{ github.event.inputs.network }}"
             echo "Manual workflow dispatch for network: $network"
-            if [ -d "mainnet/$network/gentx" ]; then
-              GENTX_FILES=$(find mainnet/$network/gentx -name "*.json" \
+            if [ "$network" = "mainnet" ] && [ -d "mainnet/gentx" ]; then
+              GENTX_FILES=$(find mainnet/gentx -name "*.json" \
                 2>/dev/null || echo "")
             else
-              echo "Network directory not found: mainnet/$network/gentx"
+              echo "Only mainnet is supported. GenTx directory: mainnet/gentx"
               GENTX_FILES=""
             fi
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -80,11 +80,11 @@ jobs:
             base_ref="origin/${{ github.base_ref }}"
             sha="${{ github.sha }}"
             GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
-              grep -E 'mainnet/.*/gentx/.*\.json$' || echo "")
+              grep -E 'mainnet/gentx/.*\.json$' || echo "")
           else
             # Fallback: validate all mainnet GenTx files
             echo "Validating all mainnet GenTx files..."
-            GENTX_FILES=$(find mainnet/*/gentx -name "*.json" \
+            GENTX_FILES=$(find mainnet/gentx -name "*.json" \
               2>/dev/null || echo "")
           fi
 
@@ -133,7 +133,19 @@ jobs:
           VALIDATION_FAILED=false
           FAILED_FILES=""
           VALIDATED_COUNT=0
-          NETWORKS_VALIDATED=""
+          NETWORKS_VALIDATED="mainnet"
+
+          # Check if genesis file exists
+          genesis_file="mainnet/init_genesis.json"
+          if [ ! -f "$GITHUB_WORKSPACE/$genesis_file" ]; then
+            echo "❌ Genesis file not found: $genesis_file"
+            echo "Cannot proceed with validation without genesis file."
+            exit 1
+          fi
+
+          # Copy genesis file for validation
+          cp "$GITHUB_WORKSPACE/$genesis_file" ./init_genesis.json
+          echo "✅ Using genesis file: $genesis_file"
 
           for gentx_file in $GENTX_FILES; do
             if [ ! -f "$GITHUB_WORKSPACE/$gentx_file" ]; then
@@ -141,41 +153,15 @@ jobs:
               continue
             fi
 
-            # Extract network name from path
-            # (e.g., mainnet/chiado/gentx/file.json -> chiado)
-            network=$(echo "$gentx_file" | cut -d'/' -f2)
-            genesis_file="mainnet/${network}/genesis.json"
-
             echo ""
             echo "📁 Validating: $gentx_file"
-            echo "   Network: $network"
+            echo "   Network: mainnet"
             echo "   Genesis: $genesis_file"
-
-            # Check if genesis file exists
-            if [ ! -f "$GITHUB_WORKSPACE/$genesis_file" ]; then
-              echo "   ❌ Genesis file not found: $genesis_file"
-              VALIDATION_FAILED=true
-              failed_msg="$gentx_file (genesis not found)"
-              FAILED_FILES="$FAILED_FILES\n  - $failed_msg"
-              continue
-            fi
-
-            # Copy genesis file for validation
-            cp "$GITHUB_WORKSPACE/$genesis_file" ./init_genesis.json
 
             # Run validation
             if ./check-genesis "$GITHUB_WORKSPACE/$gentx_file"; then
               echo "   ✅ PASSED"
               VALIDATED_COUNT=$((VALIDATED_COUNT + 1))
-
-              # Track unique networks
-              if [[ ! "$NETWORKS_VALIDATED" =~ $network ]]; then
-                if [ -z "$NETWORKS_VALIDATED" ]; then
-                  NETWORKS_VALIDATED="$network"
-                else
-                  NETWORKS_VALIDATED="$NETWORKS_VALIDATED, $network"
-                fi
-              fi
             else
               echo "   ❌ FAILED"
               VALIDATION_FAILED=true
