@@ -27,11 +27,10 @@ jobs:
 
       - name: Run GenTx validation with Dagger
         id: validation
-        uses: dagger/dagger-for-github@v6
+        uses: dagger/dagger-for-github@v8
         with:
           verb: call
           args: validate-gentx-cli --source . --network "${{ github.event.inputs.network || 'mainnet' }}" --wardend-version "${{ env.WARDEND_VERSION }}" --go-version "${{ env.GO_VERSION }}"
-          version: "0.18.17"
         continue-on-error: false
 
       - name: Parse validation results
