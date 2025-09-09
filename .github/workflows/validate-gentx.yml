@@ -25,18 +25,51 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Dagger CLI
+        run: |
+          curl -fsSL https://dl.dagger.io/dagger/install.sh | \
+            DAGGER_VERSION=v0.18.17 sh
+          sudo mv ./bin/dagger /usr/local/bin/dagger
+          dagger version
+
       - name: Run GenTx validation with Dagger
         id: validation
-        uses: dagger/dagger-for-github@v6
-        with:
-          version: v0.18.17
-          verb: call
-          args: >-
-            validate-gentx-cli
-            --source .
-            --network "${{ github.event.inputs.network || 'mainnet' }}"
-            --wardend-version "${{ env.WARDEND_VERSION }}"
-            --go-version "${{ env.GO_VERSION }}"
+        run: |
+          # Set output file for capturing results
+          OUTPUT_FILE=$(mktemp)
+          ERROR_FILE=$(mktemp)
+          EXIT_CODE=0
+          
+          # Run dagger command and capture output/exit code
+          dagger call validate-gentx-cli \
+            --source . \
+            --network "${{ github.event.inputs.network || 'mainnet' }}" \
+            --wardend-version "${{ env.WARDEND_VERSION }}" \
+            --go-version "${{ env.GO_VERSION }}" \
+            > "$OUTPUT_FILE" 2> "$ERROR_FILE" || EXIT_CODE=$?
+          
+          # Set outputs for use in subsequent steps
+          {
+            echo "stdout<<DAGGER_EOF"
+            cat "$OUTPUT_FILE"
+            echo
+            echo "DAGGER_EOF"
+          } >> $GITHUB_OUTPUT
+          
+          {
+            echo "stderr<<DAGGER_ERR_EOF"
+            cat "$ERROR_FILE"
+            echo
+            echo "DAGGER_ERR_EOF"
+          } >> $GITHUB_OUTPUT
+          
+          echo "result=$EXIT_CODE" >> $GITHUB_OUTPUT
+          
+          # Clean up temp files
+          rm -f "$OUTPUT_FILE" "$ERROR_FILE"
+          
+          # Exit with the same code as dagger command
+          exit $EXIT_CODE
         continue-on-error: false
 
       - name: Parse validation results
