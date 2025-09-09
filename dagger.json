@@ -1,0 +1,8 @@
+{
+  "name": "warden-networks-ci",
+  "engineVersion": "v0.18.17",
+  "sdk": {
+    "source": "go"
+  },
+  "source": "ci"
+}

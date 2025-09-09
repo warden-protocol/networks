@@ -1,0 +1,6 @@
+# Dagger
+.dagger/
+**/dagger_engine/
+ci/dagger.gen.go
+ci/internal/
+ci/querybuilder/

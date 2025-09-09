@@ -10,11 +10,11 @@ on:
       network:
         description: 'Network to validate (mainnet only)'
         required: false
-        default: ''
+        default: 'mainnet'
 
 env:
-  GO_VERSION: '1.24'
   WARDEND_VERSION: 'v0.7.0-rc3'
+  GO_VERSION: '1.24'
 
 jobs:
   validate-gentx:
@@ -25,228 +25,51 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
-      - name: Pull wardend Docker image
+      - name: Install Dagger CLI
         run: |
-          echo "Pulling wardend Docker image for ${{ env.WARDEND_VERSION }}..."
-          # Pull the wardend Docker image
-          docker_image="ghcr.io/warden-protocol/wardenprotocol/wardend:${{ env.WARDEND_VERSION }}"
-          echo "Pulling: $docker_image"
-          docker pull "$docker_image"
-          echo "✅ Pulled wardend Docker image"
+          curl -fsSL https://dl.dagger.io/dagger/install.sh | BIN_DIR=/usr/local/bin sudo -E sh
 
-      - name: Get mainnet GenTx files to validate
-        id: get-files
+      - name: Run GenTx validation with Dagger
+        id: validation
         run: |
-          echo "Getting mainnet GenTx files to validate..."
-
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
-             [ -n "${{ github.event.inputs.network }}" ]; then
-            # Manual dispatch with specific network (only mainnet supported)
-            network="${{ github.event.inputs.network }}"
-            echo "Manual workflow dispatch for network: $network"
-            if [ "$network" = "mainnet" ] && [ -d "mainnet/gentx" ]; then
-              GENTX_FILES=$(find mainnet/gentx -name "*.json" \
-                2>/dev/null || echo "")
-            else
-              echo "Only mainnet is supported. GenTx directory: mainnet/gentx"
-              GENTX_FILES=""
-            fi
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            # PR: get changed mainnet files only
-            msg="Pull request detected, checking changed mainnet GenTx files..."
-            echo "$msg"
-            base_ref="origin/${{ github.base_ref }}"
-            sha="${{ github.sha }}"
-            GENTX_FILES=$(git diff --name-only $base_ref...$sha | \
-              grep -E 'mainnet/gentx/.*\.json$' || echo "")
+          # Determine network (default to mainnet if not specified)
+          NETWORK="${{ github.event.inputs.network || 'mainnet' }}"
+          echo "network=$NETWORK" >> $GITHUB_OUTPUT
+          
+          # Run the Dagger validation
+          echo "Running GenTx validation for network: $NETWORK"
+          
+          # Capture the validation result
+          if dagger call validate-gentx \
+            --source . \
+            --network "$NETWORK" \
+            --wardend-version "$WARDEND_VERSION" \
+            --go-version "$GO_VERSION"; then
+            echo "validation_status=success" >> $GITHUB_OUTPUT
           else
-            # Fallback: validate all mainnet GenTx files
-            echo "Validating all mainnet GenTx files..."
-            GENTX_FILES=$(find mainnet/gentx -name "*.json" \
-              2>/dev/null || echo "")
+            echo "validation_status=failed" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
-          if [ -z "$GENTX_FILES" ]; then
-            echo "No GenTx files found to validate"
-            echo "has-files=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          echo "Found GenTx files to validate:"
-          echo "$GENTX_FILES" | while read -r file; do
-            echo "  - $file"
-          done
-
-          # Store files for later steps
-          echo "$GENTX_FILES" > /tmp/gentx-files.txt
-          echo "has-files=true" >> $GITHUB_OUTPUT
-
-      - name: Build check-genesis tool
-        if: steps.get-files.outputs.has-files == 'true'
+      - name: Run local validation output for logs
+        if: always()
         run: |
-          echo "Building check-genesis tool..."
-          mkdir -p /tmp/gentx-validation
-          cd /tmp/gentx-validation
-
-          # Copy the check-genesis tool source
-          cp -r "$GITHUB_WORKSPACE/utils/check-genesis" ./
-          cd check-genesis
-
-          echo "Building from Go module in $(pwd)..."
-          
-          # List files to debug
-          echo "Files in check-genesis directory:"
-          ls -la
-          
-          # Build the tool (build the main module, not specific file)
-          go mod tidy
-          go build -o ../check-genesis .
-
-          echo "✅ Built check-genesis tool, checking result..."
-          
-          # Move back to parent directory to test the binary
-          cd ..
-          
-          echo "Files in validation directory:"
-          ls -la
-          
-          # Test that the check-genesis tool is created and available
-          if [ ! -f "./check-genesis" ]; then
-            echo "❌ Error: check-genesis binary not found at $(pwd)/check-genesis"
-            echo "Directory contents:"
-            ls -la
-            exit 1
-          fi
-
-          if [ ! -x "./check-genesis" ]; then
-            echo "❌ Error: check-genesis binary is not executable!"
-            chmod +x ./check-genesis
-            echo "✅ Made check-genesis executable"
-          fi
-
-          # Test that the tool runs (it should show usage when run without args)
-          echo "Testing check-genesis execution..."
-          if ./check-genesis 2>&1 | grep -q "Usage:"; then
-            echo "✅ check-genesis tool responds correctly to no arguments"
-          else
-            echo "❌ Error: check-genesis tool does not show expected usage message"
-            echo "Tool output:"
-            ./check-genesis 2>&1 || true
-            exit 1
-          fi
-
-          echo "✅ Verified check-genesis tool is available and executable"
-
-      - name: Validate all GenTx files
-        if: steps.get-files.outputs.has-files == 'true'
-        run: |
-          cd /tmp/gentx-validation
-
-          echo "🚀 Starting GenTx validation..."
-          echo "==========================================="
-
-          # Read the list of files to validate
-          GENTX_FILES=$(cat /tmp/gentx-files.txt)
-          VALIDATION_FAILED=false
-          FAILED_FILES=""
-          VALIDATED_COUNT=0
-          NETWORKS_VALIDATED="mainnet"
-          DOCKER_IMAGE="ghcr.io/warden-protocol/wardenprotocol/wardend:${{ env.WARDEND_VERSION }}"
-
-          # Check if genesis file exists
-          genesis_file="mainnet/init_genesis.json"
-          if [ ! -f "$GITHUB_WORKSPACE/$genesis_file" ]; then
-            echo "❌ Genesis file not found: $genesis_file"
-            echo "Cannot proceed with validation without genesis file."
-            exit 1
-          fi
-
-          # Copy genesis file for validation
-          cp "$GITHUB_WORKSPACE/$genesis_file" ./init_genesis.json
-          echo "✅ Using genesis file: $genesis_file"
-
-          for gentx_file in $GENTX_FILES; do
-            if [ ! -f "$GITHUB_WORKSPACE/$gentx_file" ]; then
-              echo "⚠️  File not found: $gentx_file (skipping)"
-              continue
-            fi
-
-            echo ""
-            echo "📁 Validating: $gentx_file"
-            echo "   Network: mainnet"
-            echo "   Genesis: $genesis_file"
-
-            # Create a temporary directory for this validation
-            TEMP_DIR="/tmp/gentx-validation"
-            mkdir -p "$TEMP_DIR"
-            # Copy required files to temp directory
-            cp ./init_genesis.json "$TEMP_DIR/"
-            cp "$GITHUB_WORKSPACE/$gentx_file" "$TEMP_DIR/"
-            cp ./check-genesis "$TEMP_DIR/"
-            
-            # Run validation using Docker with volume mount
-            # Mount the temp directory and run the check-genesis tool inside the container
-            if docker run --rm \
-                -v "$TEMP_DIR:/workspace" \
-                -w /workspace \
-                --entrypoint="/bin/bash" \
-                "$DOCKER_IMAGE" \
-                ./check-genesis "$(basename $gentx_file)"; then
-              echo "   ✅ PASSED"
-              VALIDATED_COUNT=$((VALIDATED_COUNT + 1))
-            else
-              echo "   ❌ FAILED"
-              VALIDATION_FAILED=true
-              FAILED_FILES="$FAILED_FILES\n  - $gentx_file"
-            fi
-            
-            # Clean up temp directory
-            rm -rf "$TEMP_DIR"
-          done
-
-          echo ""
-          echo "==========================================="
-          echo "📊 Validation Summary:"
-          echo "   Files validated: $VALIDATED_COUNT"
-          echo "   Networks: $NETWORKS_VALIDATED"
-
-          if [ "$VALIDATION_FAILED" = "true" ]; then
-            echo "   Status: ❌ FAILED"
-            echo ""
-            echo "Failed files:"
-            echo -e "$FAILED_FILES"
-            exit 1
-          else
-            echo "   Status: ✅ ALL PASSED"
-          fi
-
-          # Store results for PR comment
-          echo "validated_count=$VALIDATED_COUNT" >> $GITHUB_ENV
-          echo "networks_validated=$NETWORKS_VALIDATED" >> $GITHUB_ENV
-
-      - name: Upload validation logs
-        if: always() && steps.get-files.outputs.has-files == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: gentx-validation-logs-${{ github.run_id }}
-          path: |
-            /tmp/gentx-validation/logs.txt
-            /tmp/gentx-validation/.warden/logs/
-          if-no-files-found: ignore
+          echo "=== Detailed Validation Results ==="
+          dagger call run-local-validation \
+            --source . \
+            --network "${{ steps.validation.outputs.network }}" \
+            --wardend-version "$WARDEND_VERSION" \
+            --go-version "$GO_VERSION" || true
 
       - name: Comment on PR (Success)
         if: >
           github.event_name == 'pull_request' && 
-          success() && 
-          steps.get-files.outputs.has-files == 'true'
+          steps.validation.outputs.validation_status == 'success'
         uses: actions/github-script@v6
         with:
           script: |
+            const network = '${{ steps.validation.outputs.network }}';
+            
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -258,19 +81,16 @@ jobs:
               comment.body.includes('GenTx Validation Results')
             );
 
-            const validatedCount = process.env.validated_count || '0';
-            const networksValidated = process.env.networks_validated || 'none';
-
             const commentBody = `## ✅ GenTx Validation Results
 
             **Status**: ✅ **ALL PASSED**
-            **Files validated**: ${validatedCount}
-            **Networks**: ${networksValidated}
+            **Network**: ${network}
+            **Validation Tool**: Dagger CI
 
-            All GenTx files have been successfully validated!
+            All GenTx files have been successfully validated using Dagger!
 
             ---
-            <sub>🤖 Auto-generated by GenTx validation workflow</sub>`;
+            <sub>🤖 Auto-generated by Dagger GenTx validation</sub>`;
 
             if (botComment) {
               await github.rest.issues.updateComment({
@@ -291,17 +111,19 @@ jobs:
       - name: Comment on PR (Failure)
         if: >
           github.event_name == 'pull_request' && 
-          failure() && 
-          steps.get-files.outputs.has-files == 'true'
+          steps.validation.outputs.validation_status == 'failed'
         uses: actions/github-script@v6
         with:
           script: |
+            const network = '${{ steps.validation.outputs.network }}';
             const baseUrl = context.payload.repository.html_url;
             const runUrl = `${baseUrl}/actions/runs/${context.runId}`;
 
             const commentBody = `## ❌ GenTx Validation Results
 
             **Status**: ❌ **FAILED**
+            **Network**: ${network}
+            **Validation Tool**: Dagger CI
 
             One or more GenTx files failed validation.
             Check the logs for details: [View Workflow Run](${runUrl})
@@ -312,8 +134,13 @@ jobs:
             - Missing required fields
             - Network configuration mismatch
 
+            To run validation locally:
+            \`\`\`bash
+            dagger call run-local-validation --source . --network ${network}
+            \`\`\`
+
             ---
-            <sub>🤖 Auto-generated by GenTx validation workflow</sub>`;
+            <sub>🤖 Auto-generated by Dagger GenTx validation</sub>`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -322,25 +149,10 @@ jobs:
               body: commentBody
             });
 
-      - name: Comment on PR (No files)
-        if: >
-          github.event_name == 'pull_request' && 
-          steps.get-files.outputs.has-files == 'false'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const commentBody = `## 🔍 GenTx Validation Results
-
-            **Status**: ℹ️ **NO FILES TO VALIDATE**
-
-            No mainnet GenTx files were modified in this PR.
-
-            ---
-            <sub>🤖 Auto-generated by GenTx validation workflow</sub>`;
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: commentBody
-            });
+      - name: Test check-genesis tool build
+        if: always()
+        run: |
+          echo "=== Testing check-genesis tool build ==="
+          dagger call test-check-genesis-tool \
+            --source . \
+            --go-version "$GO_VERSION" || true
