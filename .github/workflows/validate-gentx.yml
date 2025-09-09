@@ -25,50 +25,69 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Dagger CLI
-        run: |
-          curl -fsSL https://dl.dagger.io/dagger/install.sh | BIN_DIR=/usr/local/bin sudo -E sh
-
       - name: Run GenTx validation with Dagger
         id: validation
+        uses: dagger/dagger-for-github@v6
+        with:
+          verb: call
+          args: validate-gentx-cli --source . --network "${{ github.event.inputs.network || 'mainnet' }}" --wardend-version "${{ env.WARDEND_VERSION }}" --go-version "${{ env.GO_VERSION }}"
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+          version: "0.18.17"
+        continue-on-error: true
+
+      - name: Parse validation results
+        id: parse_results
         run: |
-          # Determine network (default to mainnet if not specified)
+          # Set network for downstream steps
           NETWORK="${{ github.event.inputs.network || 'mainnet' }}"
           echo "network=$NETWORK" >> $GITHUB_OUTPUT
           
-          # Run the Dagger validation
-          echo "Running GenTx validation for network: $NETWORK"
+          # Parse the validation output to determine status
+          echo "=== Validation Results ==="
+          echo "Exit Code: ${{ steps.validation.outputs.result }}"
+          echo "Output: ${{ steps.validation.outputs.stdout }}"
+          if [ -n "${{ steps.validation.outputs.stderr }}" ]; then
+            echo "Errors: ${{ steps.validation.outputs.stderr }}"
+          fi
+          echo "=========================="
           
-          # Capture the validation result
-          if dagger call validate-gentx \
-            --source . \
-            --network "$NETWORK" \
-            --wardend-version "$WARDEND_VERSION" \
-            --go-version "$GO_VERSION"; then
+          # Check if validation was successful (exit code 0)
+          if [ "${{ steps.validation.outputs.result }}" == "0" ]; then
             echo "validation_status=success" >> $GITHUB_OUTPUT
+            echo "✅ Validation PASSED"
           else
             echo "validation_status=failed" >> $GITHUB_OUTPUT
-            exit 1
+            echo "❌ Validation FAILED"
           fi
 
-      - name: Run local validation output for logs
+      - name: Run detailed validation output (on failure)
+        if: steps.parse_results.outputs.validation_status == 'failed'
+        uses: dagger/dagger-for-github@v6
+        with:
+          verb: call
+          args: run-local-validation --source . --network "${{ steps.parse_results.outputs.network }}" --wardend-version "${{ env.WARDEND_VERSION }}" --go-version "${{ env.GO_VERSION }}"
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+          version: "0.18.17"
+
+      - name: Test check-genesis tool build
         if: always()
-        run: |
-          echo "=== Detailed Validation Results ==="
-          dagger call run-local-validation \
-            --source . \
-            --network "${{ steps.validation.outputs.network }}" \
-            --wardend-version "$WARDEND_VERSION" \
-            --go-version "$GO_VERSION" || true
+        uses: dagger/dagger-for-github@v6
+        with:
+          verb: call
+          args: test-check-genesis-tool --source . --go-version "${{ env.GO_VERSION }}"
+          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
+          version: "0.18.17"
+        continue-on-error: true
 
       - name: Comment on PR (Success)
         if: >
           github.event_name == 'pull_request' && 
-          steps.validation.outputs.validation_status == 'success'
-        uses: actions/github-script@v6
+          steps.parse_results.outputs.validation_status == 'success'
+        uses: actions/github-script@v7
         with:
           script: |
-            const network = '${{ steps.validation.outputs.network }}';
+            const network = '${{ steps.parse_results.outputs.network }}';
+            const validationOutput = `${{ steps.validation.outputs.stdout }}`;
             
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -86,6 +105,8 @@ jobs:
             **Status**: ✅ **ALL PASSED**
             **Network**: ${network}
             **Validation Tool**: Dagger CI
+
+            **Results**: ${validationOutput}
 
             All GenTx files have been successfully validated using Dagger!
 
@@ -111,19 +132,27 @@ jobs:
       - name: Comment on PR (Failure)
         if: >
           github.event_name == 'pull_request' && 
-          steps.validation.outputs.validation_status == 'failed'
-        uses: actions/github-script@v6
+          steps.parse_results.outputs.validation_status == 'failed'
+        uses: actions/github-script@v7
         with:
           script: |
-            const network = '${{ steps.validation.outputs.network }}';
+            const network = '${{ steps.parse_results.outputs.network }}';
             const baseUrl = context.payload.repository.html_url;
             const runUrl = `${baseUrl}/actions/runs/${context.runId}`;
+            const validationOutput = `${{ steps.validation.outputs.stdout }}`;
+            const validationError = `${{ steps.validation.outputs.stderr }}`;
 
             const commentBody = `## ❌ GenTx Validation Results
 
             **Status**: ❌ **FAILED**
             **Network**: ${network}
             **Validation Tool**: Dagger CI
+
+            **Error Output**: 
+            \`\`\`
+            ${validationOutput}
+            ${validationError ? '\n' + validationError : ''}
+            \`\`\`
 
             One or more GenTx files failed validation.
             Check the logs for details: [View Workflow Run](${runUrl})
@@ -149,10 +178,11 @@ jobs:
               body: commentBody
             });
 
-      - name: Test check-genesis tool build
-        if: always()
+      - name: Final status check
         run: |
-          echo "=== Testing check-genesis tool build ==="
-          dagger call test-check-genesis-tool \
-            --source . \
-            --go-version "$GO_VERSION" || true
+          if [ "${{ steps.parse_results.outputs.validation_status }}" == "failed" ]; then
+            echo "❌ Validation failed - exiting with error"
+            exit 1
+          else
+            echo "✅ Validation passed successfully"
+          fi

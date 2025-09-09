@@ -9,6 +9,41 @@ import (
 
 type Ci struct{}
 
+// ValidateGentxCli validates Genesis Transaction files using the check-genesis tool (CLI-friendly)
+// This function returns a simple string output and uses appropriate exit codes for CI/CD
+func (m *Ci) ValidateGentxCli(
+	ctx context.Context,
+	// Source directory containing the repository
+	source *dagger.Directory,
+	// Network to validate (default: mainnet)
+	// +optional
+	// +default="mainnet"
+	network string,
+	// Wardend version to use for validation
+	// +optional
+	// +default="v0.7.0-rc3"
+	wardendVersion string,
+	// Go version for building check-genesis tool
+	// +optional
+	// +default="1.24"
+	goVersion string,
+) (string, error) {
+	result, err := m.ValidateGentx(ctx, source, network, wardendVersion, goVersion)
+	if err != nil {
+		return "", err
+	}
+
+	// Format output and return error if validation failed
+	output := fmt.Sprintf("Status: %s, Network: %s, Files: %d, Message: %s",
+		result.Status, result.NetworkValidated, result.FilesValidated, result.Message)
+
+	if result.Status == "failed" {
+		return output, fmt.Errorf("validation failed")
+	}
+
+	return output, nil
+}
+
 // ValidateGentx validates Genesis Transaction files using the check-genesis tool
 func (m *Ci) ValidateGentx(
 	ctx context.Context,

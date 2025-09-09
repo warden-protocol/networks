@@ -1,6 +1,10 @@
 # Dagger
 .dagger/
 **/dagger_engine/
-ci/dagger.gen.go
-ci/internal/
-ci/querybuilder/
+dagger.gen.go
+internal/
+querybuilder/
+/internal/dagger
+/internal/querybuilder
+/internal/telemetry
+/.env

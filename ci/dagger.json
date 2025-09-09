@@ -1,7 +1,0 @@
-{
-  "name": "ci",
-  "engineVersion": "v0.18.17",
-  "sdk": {
-    "source": "go"
-  }
-}
