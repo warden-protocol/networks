@@ -31,9 +31,8 @@ jobs:
         with:
           verb: call
           args: validate-gentx-cli --source . --network "${{ github.event.inputs.network || 'mainnet' }}" --wardend-version "${{ env.WARDEND_VERSION }}" --go-version "${{ env.GO_VERSION }}"
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
           version: "0.18.17"
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Parse validation results
         id: parse_results
@@ -41,7 +40,6 @@ jobs:
           # Set network for downstream steps
           NETWORK="${{ github.event.inputs.network || 'mainnet' }}"
           echo "network=$NETWORK" >> $GITHUB_OUTPUT
-          
           # Parse the validation output to determine status
           echo "=== Validation Results ==="
           echo "Exit Code: ${{ steps.validation.outputs.result }}"
@@ -50,7 +48,6 @@ jobs:
             echo "Errors: ${{ steps.validation.outputs.stderr }}"
           fi
           echo "=========================="
-          
           # Check if validation was successful (exit code 0)
           if [ "${{ steps.validation.outputs.result }}" == "0" ]; then
             echo "validation_status=success" >> $GITHUB_OUTPUT
@@ -60,35 +57,14 @@ jobs:
             echo "❌ Validation FAILED"
           fi
 
-      - name: Run detailed validation output (on failure)
-        if: steps.parse_results.outputs.validation_status == 'failed'
-        uses: dagger/dagger-for-github@v6
-        with:
-          verb: call
-          args: run-local-validation --source . --network "${{ steps.parse_results.outputs.network }}" --wardend-version "${{ env.WARDEND_VERSION }}" --go-version "${{ env.GO_VERSION }}"
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          version: "0.18.17"
-
-      - name: Test check-genesis tool build
-        if: always()
-        uses: dagger/dagger-for-github@v6
-        with:
-          verb: call
-          args: test-check-genesis-tool --source . --go-version "${{ env.GO_VERSION }}"
-          cloud-token: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-          version: "0.18.17"
-        continue-on-error: true
-
       - name: Comment on PR (Success)
         if: >
-          github.event_name == 'pull_request' && 
-          steps.parse_results.outputs.validation_status == 'success'
+          github.event_name == 'pull_request' && steps.parse_results.outputs.validation_status == 'success'
         uses: actions/github-script@v7
         with:
           script: |
             const network = '${{ steps.parse_results.outputs.network }}';
             const validationOutput = `${{ steps.validation.outputs.stdout }}`;
-            
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
