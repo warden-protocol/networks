@@ -20,6 +20,9 @@ env:
 jobs:
   validate-gentx:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,4 +41,69 @@ jobs:
             --network "${{ github.event.inputs.network || 'mainnet' }}"
             --wardend-version "${{ env.WARDEND_VERSION }}"
             --go-version "${{ env.GO_VERSION }}"
-        continue-on-error: false
+        continue-on-error: true
+
+      - name: Comment PR with validation results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Find existing validation comment
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('## GenTx Validation Results')
+            );
+
+            const validationStatus = '${{ steps.validation.outcome }}';
+            const network = '${{ github.event.inputs.network || 'mainnet' }}';
+            
+            let commentBody = `## GenTx Validation Results\n\n`;
+            commentBody += `**Network:** ${network}\n`;
+            commentBody += `**Wardend Version:** ${{ env.WARDEND_VERSION }}\n`;
+            commentBody += `**Status:** ${validationStatus === 'success' ? '✅ PASSED' : '❌ FAILED'}\n\n`;
+            
+            if (validationStatus === 'success') {
+              commentBody += `🎉 All GenTx files have been successfully validated!\n\n`;
+              commentBody += `The validation process checked:\n`;
+              commentBody += `- File format and structure\n`;
+              commentBody += `- Signature validity\n`;
+              commentBody += `- Network compatibility\n`;
+            } else {
+              commentBody += `⚠️ GenTx validation failed. Please check the workflow logs for details.\n\n`;
+              commentBody += `Common issues to check:\n`;
+              commentBody += `- File format is correct JSON\n`;
+              commentBody += `- Signatures are valid\n`;
+              commentBody += `- Network parameters match\n`;
+            }
+            
+            commentBody += `\n---\n`;
+            commentBody += `*Validation run: ${context.runNumber} | Commit: ${context.sha.substring(0, 7)}*`;
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+
+      - name: Fail workflow if validation failed
+        if: steps.validation.outcome == 'failure'
+        run: |
+          echo "GenTx validation failed"
+          exit 1
