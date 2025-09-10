@@ -1,0 +1,129 @@
+{
+  "$schema": "../../chain.schema.json",
+  "chain_name": "wardenprotocoltestnet",
+  "status": "live",
+  "network_type": "testnet",
+  "pretty_name": "Warden Protocol Barra",
+  "chain_id": "barra_9191-1",
+  "bech32_prefix": "warden",
+  "daemon_name": "wardend",
+  "node_home": "$HOME/.warden",
+  "key_algos": [
+    "ethsecp256k1",
+    "secp256k1"
+  ],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "award",
+        "fixed_min_gas_price": 1.0,
+        "low_gas_price": 0.0,
+        "average_gas_price": 1.0,
+        "high_gas_price": 3.0
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [
+      {
+        "denom": "award"
+      }
+    ]
+  },
+  "codebase": {
+    "git_repo": "https://github.com/warden-protocol/wardenprotocol",
+    "recommended_version": "v0.7.0-rc3",
+    "compatible_versions": [
+      "v0.7.0-rc3"
+    ],
+    "cosmos_sdk_version": "0.53.4",
+    "consensus": {
+      "type": "cometbft",
+      "version": "0.38"
+    },
+    "cosmwasm_enabled": false,
+    "genesis": {
+      "genesis_url": "https://raw.githubusercontent.com/warden-protocol/networks/main/testnets/barra/genesis.json"
+    },
+    "versions": [
+      {
+        "name": "v0.7.0-rc3",
+        "recommended_version": "v0.7.0-rc3",
+        "compatible_versions": [
+          "v0.7.0-rc3"
+        ],
+        "cosmos_sdk_version": "0.53.4",
+        "consensus": {
+          "type": "cometbft",
+          "version": "0.38"
+        },
+        "cosmwasm_enabled": false
+      }
+    ]
+  },
+  "peers": {
+    "seeds": [
+      {
+        "id": "c489c003b7c72298840bd4411ffc98ce13e07c27",
+        "address": "54.194.136.183:26656",
+        "provider": "Warden Labs"
+      },
+      {
+        "id": "4564c91423a923eaba7982e69e33aec6185d362f",
+        "address": "54.72.5.234:26656",
+        "provider": "Warden Labs"
+      }
+    ],
+    "persistent_peers": [
+      {
+        "id": "c489c003b7c72298840bd4411ffc98ce13e07c27",
+        "address": "54.194.136.183:26656",
+        "provider": "Warden Labs"
+      },
+      {
+        "id": "4564c91423a923eaba7982e69e33aec6185d362f",
+        "address": "54.72.5.234:26656",
+        "provider": "Warden Labs"
+      }
+    ]
+  },
+  "apis": {
+    "rpc": [
+      {
+        "address": "https://rpc.barra.wardenprotocol.org/",
+        "provider": "Warden Labs"
+      }
+    ],
+    "rest": [
+      {
+        "address": "https://api.barra.wardenprotocol.org/",
+        "provider": "Warden Labs"
+      }
+    ],
+    "grpc": [
+      {
+        "address": "https://grpc.barra.wardenprotocol.org/",
+        "provider": "Warden Labs"
+      }
+    ],
+    "evm": [
+      {
+        "address": "https://evm.barra.wardenprotocol.org/",
+        "provider": "Warden Labs"
+      }
+    ]
+  },
+  "logo_URIs": {
+    "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/wardenprotocol/images/ward.png"
+  },
+  "explorers": [],
+  "keywords": [
+    "testnet"
+  ],
+  "images": [
+    {
+      "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/wardenprotocol/images/ward.png"
+    }
+  ]
+}
