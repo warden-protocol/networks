@@ -212,12 +212,12 @@ func (m *Ci) validateSingleGentx(
 	// If validation failed
 	if stdoutErr != nil {
 		errorMessage := "Validation failed"
-		
+
 		// Try to get stderr for error details
 		if stderr != "" {
 			errorMessage = fmt.Sprintf("Validation failed: %s", stderr)
 		}
-		
+
 		// Try to get logs.txt for more detailed error information
 		logResult := validationResult.WithExec([]string{"cat", "logs.txt"})
 		if logs, logErr := logResult.Stdout(ctx); logErr == nil && logs != "" {
@@ -225,7 +225,7 @@ func (m *Ci) validateSingleGentx(
 			logLines := strings.Split(logs, "\n")
 			for i := len(logLines) - 1; i >= 0; i-- {
 				line := strings.TrimSpace(logLines[i])
-				if line != "" && (strings.Contains(strings.ToLower(line), "error") || 
+				if line != "" && (strings.Contains(strings.ToLower(line), "error") ||
 					strings.Contains(strings.ToLower(line), "failed") ||
 					strings.Contains(strings.ToLower(line), "panic")) {
 					errorMessage = fmt.Sprintf("Validation failed: %s", line)
@@ -304,6 +304,127 @@ func (m *Ci) RunLocalValidation(
 	}
 
 	return output.String(), nil
+}
+
+// CopyAllGentx copies all gentx files to the validation environment
+func (m *Ci) CopyAllGentx(
+	ctx context.Context,
+	// Source directory containing the repository
+	source *dagger.Directory,
+	// Network to copy from (default: mainnet)
+	// +optional
+	// +default="mainnet"
+	network string,
+	// Wardend version to use for validation
+	// +optional
+	// +default="v0.7.0-rc3"
+	wardendVersion string,
+) (*dagger.Container, error) {
+	// Get the list of gentx files
+	gentxFiles, err := m.getGentxFiles(ctx, source, network)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get gentx files: %w", err)
+	}
+
+	if len(gentxFiles) == 0 {
+		return nil, fmt.Errorf("no %s GenTx files found to copy", network)
+	}
+
+	// Create validation container with wardend
+	container := dag.Container().
+		From(fmt.Sprintf("ghcr.io/warden-protocol/wardenprotocol/wardend:%s", wardendVersion)).
+		WithUser("root").
+		WithWorkdir("/validation").
+		WithDirectory("/validation/source", source).
+		WithExec([]string{"mkdir", "-p", "/tmp/.warden/config/gentx"}).
+		WithEnvVariable("NO_COLOR", "1").
+		WithEnvVariable("HOME", "/tmp")
+
+	// Copy all gentx files to the gentx directory
+	for _, gentxFile := range gentxFiles {
+		// Extract filename from path
+		parts := strings.Split(gentxFile, "/")
+		filename := parts[len(parts)-1]
+
+		// Copy each gentx file to the gentx directory with its original name
+		container = container.WithFile(
+			fmt.Sprintf("/tmp/.warden/config/gentx/%s", filename),
+			container.Directory("/validation/source").File(gentxFile),
+		)
+	}
+
+	// Also copy the genesis file
+	genesisFile := fmt.Sprintf("%s/init_genesis.json", network)
+	container = container.WithFile("/tmp/init_genesis.json",
+		container.Directory("/validation/source").File(genesisFile))
+
+	return container, nil
+}
+
+// ValidateAllGentxTogether validates all gentx files together in one validation run
+func (m *Ci) ValidateAllGentxTogether(
+	ctx context.Context,
+	// Source directory containing the repository
+	source *dagger.Directory,
+	// Network to validate (default: mainnet)
+	// +optional
+	// +default="mainnet"
+	network string,
+	// Wardend version to use for validation
+	// +optional
+	// +default="v0.7.0-rc3"
+	wardendVersion string,
+	// Go version for building check-genesis tool
+	// +optional
+	// +default="1.24"
+	goVersion string,
+) (string, error) {
+	// Build the check-genesis tool
+	goContainer := dag.Container().
+		From(fmt.Sprintf("golang:%s", goVersion)).
+		WithWorkdir("/workspace").
+		WithDirectory("/workspace", source)
+
+	checkGenesis := goContainer.
+		WithWorkdir("/workspace/utils/check-genesis").
+		WithExec([]string{"go", "mod", "tidy"}).
+		WithExec([]string{"go", "build", "-o", "check-genesis", "."}).
+		File("check-genesis")
+
+	// Create validation container with wardend
+	validationContainer := dag.Container().
+		From(fmt.Sprintf("ghcr.io/warden-protocol/wardenprotocol/wardend:%s", wardendVersion)).
+		WithUser("root").
+		WithWorkdir("/validation").
+		WithDirectory("/validation/source", source).
+		WithFile("/validation/check-genesis", checkGenesis).
+		WithEnvVariable("NO_COLOR", "1").
+		WithEnvVariable("HOME", "/tmp")
+
+	// Copy the genesis file
+	genesisFile := fmt.Sprintf("%s/init_genesis.json", network)
+	validationContainer = validationContainer.WithFile("/validation/init_genesis.json",
+		validationContainer.Directory("/validation/source").File(genesisFile))
+
+	// Run the check-genesis tool on the entire gentx directory
+	gentxDir := fmt.Sprintf("/validation/source/%s/gentx", network)
+	validationResult := validationContainer.
+		WithWorkdir("/validation").
+		WithExec([]string{"/validation/check-genesis", gentxDir})
+
+	// Get the result
+	stdout, stdoutErr := validationResult.Stdout(ctx)
+	stderr, _ := validationResult.Stderr(ctx)
+
+	if stdoutErr != nil {
+		// Try to get additional debug information from logs
+		debugResult := validationResult.WithExec([]string{"cat", "logs.txt"})
+		debugLogs, _ := debugResult.Stdout(ctx)
+
+		return fmt.Sprintf("❌ Validation FAILED:\n%s\n\nStderr:\n%s\n\nDebug logs:\n%s", stdout, stderr, debugLogs), stdoutErr
+	}
+
+	return fmt.Sprintf("✅ Validation PASSED:\n%s", stdout), nil
 }
 
 // TestCheckGenesisTool tests that the check-genesis tool can be built and run
