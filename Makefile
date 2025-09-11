@@ -1,10 +1,14 @@
 # Warden Networks - GenTx Validation Makefile
-.PHONY: help install-dagger validate validate-verbose test-tool clean
+.PHONY: help install-dagger validate validate-batch validate-legacy validate-verbose test-tool clean
 
-# Default target
+# Default target - now uses batch validation
+validate: validate-batch ## Validate all mainnet GenTx files using batch processing (RECOMMENDED)
+
 help: ## Show this help message
 	@echo "Warden Networks GenTx Validation"
 	@echo "================================="
+	@echo ""
+	@echo "🎯 RECOMMENDED: Use 'make validate' for batch validation"
 	@echo ""
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -26,25 +30,29 @@ install-dagger: ## Install Dagger CLI (macOS/Linux)
 	@echo "Verifying installation..."
 	@dagger version
 
-validate: ## Validate all mainnet GenTx files
-	@echo "🚀 Running GenTx validation..."
-	@dagger call -m ci validate-gentx --source .
+validate-batch: ## Validate all GenTx files together (RECOMMENDED - matches production genesis process)
+	@echo "🚀 Running batch GenTx validation (all files processed together)..."
+	@cd ci && dagger call validate-all-gentx-together --source=.. --network=mainnet
 
-validate-verbose: ## Run validation with detailed output
-	@echo "🚀 Running GenTx validation with verbose output..."
-	@dagger call -m ci run-local-validation --source .
+validate-legacy: ## Validate GenTx files individually (old method)
+	@echo "🚀 Running legacy GenTx validation (files processed individually)..."
+	@cd ci && dagger call validate-gentx --source=.. --network=mainnet
+
+validate-verbose: ## Run batch validation with detailed output
+	@echo "🚀 Running batch GenTx validation with verbose output..."
+	@cd ci && dagger call --progress=plain validate-all-gentx-together --source=.. --network=mainnet
 
 test-tool: ## Test that check-genesis tool builds correctly  
 	@echo "🔧 Testing check-genesis tool build..."
-	@dagger call -m ci test-check-genesis-tool --source .
+	@cd ci && dagger call test-check-genesis-tool --source=..
 
 validate-custom: ## Validate with custom parameters (use NETWORK, WARDEND_VERSION, GO_VERSION env vars)
-	@echo "🚀 Running GenTx validation with custom parameters..."
-	@dagger call -m ci validate-gentx \
-		--source . \
-		--network $(or $(NETWORK),mainnet) \
-		--wardend-version $(or $(WARDEND_VERSION),v0.7.0-rc3) \
-		--go-version $(or $(GO_VERSION),1.24)
+	@echo "🚀 Running batch GenTx validation with custom parameters..."
+	@cd ci && dagger call validate-all-gentx-together \
+		--source=.. \
+		--network=$(or $(NETWORK),mainnet) \
+		--wardend-version=$(or $(WARDEND_VERSION),v0.7.0-rc3) \
+		--go-version=$(or $(GO_VERSION),1.24)
 
 # Development targets
 dev-validate: validate-verbose ## Alias for validate-verbose (common during development)
@@ -80,19 +88,28 @@ examples: ## Show example commands
 	@echo "📖 Example Commands"
 	@echo "=================="
 	@echo ""
-	@echo "Basic validation:"
-	@echo "  make validate"
+	@echo "🎯 RECOMMENDED - Batch validation (all files processed together):"
+	@echo "  make validate           # Default batch validation"
+	@echo "  make validate-batch     # Same as above (explicit)"
+	@echo "  make validate-verbose   # Batch validation with detailed output"
 	@echo ""
-	@echo "Validation with verbose output:"
-	@echo "  make validate-verbose"
+	@echo "Legacy validation (files processed individually):"
+	@echo "  make validate-legacy    # Old method for comparison"
 	@echo ""
-	@echo "Test tool build:"
-	@echo "  make test-tool"
+	@echo "Testing and debugging:"
+	@echo "  make test-tool          # Test tool build"
+	@echo "  make debug-info         # Environment information"
 	@echo ""
 	@echo "Custom parameters:"
 	@echo "  WARDEND_VERSION=v0.6.0 make validate-custom"
 	@echo "  GO_VERSION=1.21 NETWORK=mainnet make validate-custom"
 	@echo ""
 	@echo "Development workflow:"
-	@echo "  make dev-test    # Test tool + validate with output"
+	@echo "  make dev-test          # Test tool + batch validate with output"
+	@echo ""
+	@echo "🔍 Why batch validation?"
+	@echo "  • Matches production genesis collection process"
+	@echo "  • All gentx files processed together (more accurate)"
+	@echo "  • Better performance (no environment rebuilding per file)"
+	@echo "  • Detects inter-file conflicts (duplicate validators, etc.)"
 	@echo ""
