@@ -38,8 +38,7 @@ jobs:
           verb: call
           module: ci
           args: >-
-            validate-gentx-cli
+            validate-gentx
             --source .
             --network "${{ github.event.inputs.network || 'mainnet' }}"
             --wardend-version "${{ env.WARDEND_VERSION }}"
-            --go-version "${{ env.GO_VERSION }}"
