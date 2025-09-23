@@ -219,6 +219,13 @@
           "pub_key": null,
           "account_number": "28",
           "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden1d7ngrv38mk2vfctd0n3ajyvzm9wz8v4jauj9r0",
+          "pub_key": null,
+          "account_number": "29",
+          "sequence": "0"
         }
       ]
     },
@@ -461,7 +468,7 @@
           "coins": [
             {
               "denom": "award",
-              "amount": "499999760000000000000000000"
+              "amount": "499999750000000000000000000"
             }
           ]
         },
@@ -485,6 +492,15 @@
         },
         {
           "address": "warden12nndhsjewsgzd336dun0mmpqhcndj306ksprzh",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1d7ngrv38mk2vfctd0n3ajyvzm9wz8v4jauj9r0",
           "coins": [
             {
               "denom": "award",
