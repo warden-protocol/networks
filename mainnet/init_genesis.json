@@ -1,8 +1,8 @@
 {
   "app_name": "wardend",
-  "app_version": "v0.7.0-rc5",
-  "genesis_time": "2025-09-23T10:00:00.037022Z",
-  "chain_id": "testlaunch_123123-1",
+  "app_version": "v0.7.0",
+  "genesis_time": "2025-10-01T10:00:00.037022Z",
+  "chain_id": "warden_8765-1",
   "initial_height": 1,
   "app_hash": null,
   "app_state": {
@@ -19,77 +19,77 @@
       "accounts": [
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden13phmdfhzqu3lp70ma38zaes8khjlurg465snpq",
+          "address": "warden190z34qmh2f6d2u3rce3lnejh3r7f6uung9ccrc",
           "pub_key": null,
           "account_number": "0",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1uh3pz9lrrah2zpgveaucxl3dapsza4fq75jndz",
+          "address": "warden1mnjk7ze7hjrrvfsx880xh3lzfjjwy28ppsdyld",
           "pub_key": null,
           "account_number": "1",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1wfssd9tlvk46cgh59d8sxzg99ga5zdq09pfwml",
+          "address": "warden1sl2hkm3ka2m677x2nvwqg3xhrrp8zx2782yd2z",
           "pub_key": null,
           "account_number": "2",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1u23wx93ydlayhz365rk0ld03e62a9eegrg6mlt",
+          "address": "warden169a5ua7zzq3k5q0nvx8qhfusxagjqzr8yea968",
           "pub_key": null,
           "account_number": "3",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1k893z2mv22tmamhakx6xctm4y4t32xmmcp2a2j",
+          "address": "warden1tpn4803fuu38n5uj4utwejzqd2jgy87s8rztxm",
           "pub_key": null,
           "account_number": "4",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1et2pmg3ulltl3q37u00y4uf0ef53wp06pr2tcc",
+          "address": "warden10yd4p88jdeavfy3r89ysr667hw06khw36pacrr",
           "pub_key": null,
           "account_number": "5",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1r7vgutp248fj8zuzf9zurmq0wdwhpqyxx8rv9s",
+          "address": "warden17xq4uj9nn4u6ja5ejdyhfzgsymwerghwz3h7z0",
           "pub_key": null,
           "account_number": "6",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1kc9cuys7awfvzyshxf5fn7swtnz7vllzuxpe87",
+          "address": "warden18af4n7wyu2wv8rpxyjvn3e4v8gm55333jgmpuc",
           "pub_key": null,
           "account_number": "7",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1xh7dxgha4fatz8lc4qa460sravjtrjek4rs8gp",
+          "address": "warden16alv0xxt3t8yuq44p06c6mclr6uemfukkjmpa9",
           "pub_key": null,
           "account_number": "8",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden13df392yrplyg43q5fsp0fxg02sfg780gsuguxx",
+          "address": "warden1sqmd7h42xvhlptdututaqs07xmzjxkjwq7t6np",
           "pub_key": null,
           "account_number": "9",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden14e7ls77057lh5he3h2aa4dvakfyr3pmn57zsh7",
+          "address": "warden1dlqvte85ynmtlxfugjev8hycwkls250wan4wcq",
           "pub_key": null,
           "account_number": "10",
           "sequence": "0"
@@ -103,115 +103,301 @@
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1qtmfja80hfhh8kjn320hgwu9cyrl0keqcvl350",
+          "address": "warden17pngjsy8029syfl7pg4nzy9r4d62t7asccnjd4",
           "pub_key": null,
           "account_number": "12",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden19tn82h4a9a260k3j2d9u7m5pzcf3zmf0qk3yhg",
+          "address": "warden1hwfahcdwn6yq8wz87d8cr9mcvus3u6hracd00f",
           "pub_key": null,
           "account_number": "13",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1n02pch6gxmutymy69jm5u8slc00dwl9n64m2cp",
+          "address": "warden12nndhsjewsgzd336dun0mmpqhcndj306ksprzh",
           "pub_key": null,
           "account_number": "14",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1mlylcazenpv8m6dd60s8umncnyk3a97m870sz8",
+          "address": "warden1uz3xtfhhk9xsex28jwr4wqyxksygp3jpgpejt8",
           "pub_key": null,
           "account_number": "15",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1ljn8eukrjwtdpfu58g9d9algfq0xpgrwp7grxm",
+          "address": "warden1c6y4q86cjynqcdkr70um86ta7vscv5jf0aq9pn",
           "pub_key": null,
           "account_number": "16",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1hehv09cdt5jxvya9v7psalx2vt2w7prpvz9z3j",
+          "address": "warden1x0n9sfdxq0cz2vu7szynjffh6k0y865nz45gzt",
           "pub_key": null,
           "account_number": "17",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1rkppfn0n4l4tq5y03r3wkzy3wqqu69cwsejhsl",
+          "address": "warden1trsqpawu48wn6a0sgkll43pufwa3k7j9hjl95t",
           "pub_key": null,
           "account_number": "18",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1sl2hkm3ka2m677x2nvwqg3xhrrp8zx2782yd2z",
+          "address": "warden1496v42jeq3tn2s7cg6k2s97vcd29m5mtjj2jnc",
           "pub_key": null,
           "account_number": "19",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1dlqvte85ynmtlxfugjev8hycwkls250wan4wcq",
+          "address": "warden1qtmfja80hfhh8kjn320hgwu9cyrl0keqcvl350",
           "pub_key": null,
           "account_number": "20",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden127kkunv8nakd6p0l084ppyah7wpsmsfrryt053",
+          "address": "warden1xgynp8e3s6zlaqt7lyt7dp27jalghg3yz3wwkg",
           "pub_key": null,
           "account_number": "21",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1mnjk7ze7hjrrvfsx880xh3lzfjjwy28ppsdyld",
+          "address": "warden1074p927de4dr2jyw8ds6dfz4dwpfn8wdf9c9er",
           "pub_key": null,
           "account_number": "22",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden18af4n7wyu2wv8rpxyjvn3e4v8gm55333jgmpuc",
+          "address": "warden1lwrevxcx263hykemg40a3qx5qmkpualae5x4ey",
           "pub_key": null,
           "account_number": "23",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1hjrn4m96llvg64evrlygl7nwvmvv7g5cn6sg4q",
+          "address": "warden1d7ngrv38mk2vfctd0n3ajyvzm9wz8v4jauj9r0",
           "pub_key": null,
           "account_number": "24",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1sqmd7h42xvhlptdututaqs07xmzjxkjwq7t6np",
+          "address": "warden1hehv09cdt5jxvya9v7psalx2vt2w7prpvz9z3j",
           "pub_key": null,
           "account_number": "25",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden12de4mzezcvhauqxcszrhkdagwv8lwqs9dhac39",
+          "address": "warden1qlshkxd5ca5cphu793gqkvwqqxf7ahg4wkp7dm",
           "pub_key": null,
           "account_number": "26",
           "sequence": "0"
         },
         {
           "@type": "/cosmos.auth.v1beta1.BaseAccount",
-          "address": "warden1g8gy7u4c7870dl39deghzsqm397v6qnls9dt2r",
+          "address": "warden12de4mzezcvhauqxcszrhkdagwv8lwqs9dhac39",
           "pub_key": null,
           "account_number": "27",
           "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden19d69mguj363dflc4kyzyf9aqauekf3mrxhn7qw",
+          "pub_key": null,
+          "account_number": "28",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden1vxumxhws4z063n2ww67dqdlccpg2f5fq7n0zay",
+          "pub_key": null,
+          "account_number": "29",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden1txhtqcq5ctawleneulhzrzzyj6e0pxv49v6tje",
+          "pub_key": null,
+          "account_number": "30",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden1qvyu97ps4sgqnsapvdv9akkarythawx753ueeh",
+          "pub_key": null,
+          "account_number": "31",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden1yamqwdzadeurgdfjgvdx23nuqprx88uwlpj54s",
+              "pub_key": null,
+              "account_number": "32",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "50000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1760918410"
+          }
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden1sr8qgfpsl4dfj7rr8vwemcslqfyg4cht3d5tx8",
+          "pub_key": null,
+          "account_number": "33",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "warden14awratstkznq2986ghw8p6szacezc3j9ngualj",
+          "pub_key": null,
+          "account_number": "34",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden18j8csa9xgz576u2melm9qw902wnyct008gnh22",
+              "pub_key": null,
+              "account_number": "35",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "200000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1776643210"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.DelayedVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden19t8zjmf4gsd78w49qlglhckggdaxan30xeuly6",
+              "pub_key": null,
+              "account_number": "36",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "47000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1760918410"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden1sp8ttgfzcwsc7s8fs37su0ah7s7588ct9lldqs",
+              "pub_key": null,
+              "account_number": "37",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "43000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1839801610"
+          },
+          "start_time": "1760918410"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden1fk5amq6kmpwxvrnhnk4uaw927khhvxq0f0n358",
+              "pub_key": null,
+              "account_number": "38",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "100000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1839801610"
+          },
+          "start_time": "1760918410"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden1xwplnj4h2yw0gpc8hdd6r72ywctlk894hzeqj4",
+              "pub_key": null,
+              "account_number": "39",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "170000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1792454410"
+          },
+          "start_time": "1760918410"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "warden15xcm6y7umnarlqe8yxuxhguuewjw9g28k4xvd9",
+              "pub_key": null,
+              "account_number": "40",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "award",
+                "amount": "120000000000000000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1792454410"
+          },
+          "start_time": "1760918410"
         }
       ]
     },
@@ -234,7 +420,7 @@
           ]
         },
         {
-          "address": "warden1rkppfn0n4l4tq5y03r3wkzy3wqqu69cwsejhsl",
+          "address": "warden1qvyu97ps4sgqnsapvdv9akkarythawx753ueeh",
           "coins": [
             {
               "denom": "award",
@@ -243,7 +429,7 @@
           ]
         },
         {
-          "address": "warden1r7vgutp248fj8zuzf9zurmq0wdwhpqyxx8rv9s",
+          "address": "warden1qlshkxd5ca5cphu793gqkvwqqxf7ahg4wkp7dm",
           "coins": [
             {
               "denom": "award",
@@ -252,7 +438,25 @@
           ]
         },
         {
-          "address": "warden19tn82h4a9a260k3j2d9u7m5pzcf3zmf0qk3yhg",
+          "address": "warden1yamqwdzadeurgdfjgvdx23nuqprx88uwlpj54s",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "50000000000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden19t8zjmf4gsd78w49qlglhckggdaxan30xeuly6",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "47000000000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden19d69mguj363dflc4kyzyf9aqauekf3mrxhn7qw",
           "coins": [
             {
               "denom": "award",
@@ -261,11 +465,47 @@
           ]
         },
         {
-          "address": "warden1xh7dxgha4fatz8lc4qa460sravjtrjek4rs8gp",
+          "address": "warden190z34qmh2f6d2u3rce3lnejh3r7f6uung9ccrc",
           "coins": [
             {
               "denom": "award",
               "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1xgynp8e3s6zlaqt7lyt7dp27jalghg3yz3wwkg",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1xwplnj4h2yw0gpc8hdd6r72ywctlk894hzeqj4",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "190000000000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1x0n9sfdxq0cz2vu7szynjffh6k0y865nz45gzt",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden18j8csa9xgz576u2melm9qw902wnyct008gnh22",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "200000000000000000000000000"
             }
           ]
         },
@@ -279,11 +519,11 @@
           ]
         },
         {
-          "address": "warden1g8gy7u4c7870dl39deghzsqm397v6qnls9dt2r",
+          "address": "warden1fk5amq6kmpwxvrnhnk4uaw927khhvxq0f0n358",
           "coins": [
             {
               "denom": "award",
-              "amount": "10000000000000000000"
+              "amount": "119900000000000000000000000"
             }
           ]
         },
@@ -297,7 +537,52 @@
           ]
         },
         {
-          "address": "warden127kkunv8nakd6p0l084ppyah7wpsmsfrryt053",
+          "address": "warden12nndhsjewsgzd336dun0mmpqhcndj306ksprzh",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1tpn4803fuu38n5uj4utwejzqd2jgy87s8rztxm",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1trsqpawu48wn6a0sgkll43pufwa3k7j9hjl95t",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1txhtqcq5ctawleneulhzrzzyj6e0pxv49v6tje",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1vxumxhws4z063n2ww67dqdlccpg2f5fq7n0zay",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1d7ngrv38mk2vfctd0n3ajyvzm9wz8v4jauj9r0",
           "coins": [
             {
               "denom": "award",
@@ -315,11 +600,20 @@
           ]
         },
         {
-          "address": "warden1wfssd9tlvk46cgh59d8sxzg99ga5zdq09pfwml",
+          "address": "warden10yd4p88jdeavfy3r89ysr667hw06khw36pacrr",
           "coins": [
             {
               "denom": "award",
-              "amount": "1000000000000000000000000"
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1074p927de4dr2jyw8ds6dfz4dwpfn8wdf9c9er",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
             }
           ]
         },
@@ -329,6 +623,24 @@
             {
               "denom": "award",
               "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1sp8ttgfzcwsc7s8fs37su0ah7s7588ct9lldqs",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "53000000000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden1sr8qgfpsl4dfj7rr8vwemcslqfyg4cht3d5tx8",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "100000000000000000000000000"
             }
           ]
         },
@@ -351,25 +663,16 @@
           ]
         },
         {
-          "address": "warden13phmdfhzqu3lp70ma38zaes8khjlurg465snpq",
+          "address": "warden15xcm6y7umnarlqe8yxuxhguuewjw9g28k4xvd9",
           "coins": [
             {
               "denom": "award",
-              "amount": "1000000000000000000000000"
+              "amount": "240000000000000000000000000"
             }
           ]
         },
         {
-          "address": "warden13df392yrplyg43q5fsp0fxg02sfg780gsuguxx",
-          "coins": [
-            {
-              "denom": "award",
-              "amount": "10000000000000000000"
-            }
-          ]
-        },
-        {
-          "address": "warden1n02pch6gxmutymy69jm5u8slc00dwl9n64m2cp",
+          "address": "warden1496v42jeq3tn2s7cg6k2s97vcd29m5mtjj2jnc",
           "coins": [
             {
               "denom": "award",
@@ -378,34 +681,16 @@
           ]
         },
         {
-          "address": "warden14e7ls77057lh5he3h2aa4dvakfyr3pmn57zsh7",
+          "address": "warden14awratstkznq2986ghw8p6szacezc3j9ngualj",
           "coins": [
             {
               "denom": "award",
-              "amount": "10000000000000000000"
+              "amount": "99680000000000000000000"
             }
           ]
         },
         {
-          "address": "warden1k893z2mv22tmamhakx6xctm4y4t32xmmcp2a2j",
-          "coins": [
-            {
-              "denom": "award",
-              "amount": "497000000000000000000000000"
-            }
-          ]
-        },
-        {
-          "address": "warden1kc9cuys7awfvzyshxf5fn7swtnz7vllzuxpe87",
-          "coins": [
-            {
-              "denom": "award",
-              "amount": "10000000000000000000"
-            }
-          ]
-        },
-        {
-          "address": "warden1hjrn4m96llvg64evrlygl7nwvmvv7g5cn6sg4q",
+          "address": "warden1hwfahcdwn6yq8wz87d8cr9mcvus3u6hracd00f",
           "coins": [
             {
               "denom": "award",
@@ -423,7 +708,25 @@
           ]
         },
         {
-          "address": "warden1et2pmg3ulltl3q37u00y4uf0ef53wp06pr2tcc",
+          "address": "warden1c6y4q86cjynqcdkr70um86ta7vscv5jf0aq9pn",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden169a5ua7zzq3k5q0nvx8qhfusxagjqzr8yea968",
+          "coins": [
+            {
+              "denom": "award",
+              "amount": "10000000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "warden16alv0xxt3t8yuq44p06c6mclr6uemfukkjmpa9",
           "coins": [
             {
               "denom": "award",
@@ -441,7 +744,7 @@
           ]
         },
         {
-          "address": "warden1mlylcazenpv8m6dd60s8umncnyk3a97m870sz8",
+          "address": "warden1uz3xtfhhk9xsex28jwr4wqyxksygp3jpgpejt8",
           "coins": [
             {
               "denom": "award",
@@ -450,25 +753,25 @@
           ]
         },
         {
-          "address": "warden1u23wx93ydlayhz365rk0ld03e62a9eegrg6mlt",
+          "address": "warden17pngjsy8029syfl7pg4nzy9r4d62t7asccnjd4",
           "coins": [
             {
               "denom": "award",
-              "amount": "499999770000000000000000000"
+              "amount": "10000000000000000000"
             }
           ]
         },
         {
-          "address": "warden1uh3pz9lrrah2zpgveaucxl3dapsza4fq75jndz",
+          "address": "warden17xq4uj9nn4u6ja5ejdyhfzgsymwerghwz3h7z0",
           "coins": [
             {
               "denom": "award",
-              "amount": "1000000000000000000000000"
+              "amount": "10000000000000000000"
             }
           ]
         },
         {
-          "address": "warden1ljn8eukrjwtdpfu58g9d9algfq0xpgrwp7grxm",
+          "address": "warden1lwrevxcx263hykemg40a3qx5qmkpualae5x4ey",
           "coins": [
             {
               "denom": "award",
@@ -483,7 +786,29 @@
           "amount": "1000000000000000000000000000"
         }
       ],
-      "denom_metadata": [],
+      "denom_metadata": [
+        {
+          "description": "The native token for Warden Protocol.",
+          "denom_units": [
+            {
+              "denom": "award",
+              "exponent": 0,
+              "aliases": []
+            },
+            {
+              "denom": "ward",
+              "exponent": 18,
+              "aliases": []
+            }
+          ],
+          "base": "award",
+          "display": "ward",
+          "name": "WARD",
+          "symbol": "WARD",
+          "uri": "",
+          "uri_hash": ""
+        }
+      ],
       "send_enabled": []
     },
     "circuit": {
@@ -550,12 +875,7 @@
           "0x0000000000000000000000000000000000000803",
           "0x0000000000000000000000000000000000000804",
           "0x0000000000000000000000000000000000000805",
-          "0x0000000000000000000000000000000000000900",
-          "0x0000000000000000000000000000000000000901",
-          "0x0000000000000000000000000000000000000902",
-          "0x0000000000000000000000000000000000000903",
-          "0x0000000000000000000000000000000000000904",
-          "0x0000000000000000000000000000000000000905"
+          "0x0000000000000000000000000000000000000806"
         ],
         "history_serve_window": "8192"
       },
@@ -591,7 +911,7 @@
         "min_deposit": [
           {
             "denom": "award",
-            "amount": "100000000000000000000"
+            "amount": "1000000000000000000000"
           }
         ],
         "max_deposit_period": "86400s",
@@ -607,7 +927,7 @@
         "expedited_min_deposit": [
           {
             "denom": "award",
-            "amount": "500000000000000000000"
+            "amount": "5000000000000000000000"
           }
         ],
         "burn_vote_quorum": false,
@@ -5376,8 +5696,8 @@
     },
     "mint": {
       "minter": {
-        "inflation": "0.070000000000000000",
-        "annual_provisions": "70000000.000000000000000000"
+        "inflation": "0.050000000000000000",
+        "annual_provisions": "50000000.000000000000000000"
       },
       "params": {
         "mint_denom": "award",
@@ -5991,7 +6311,7 @@
     },
     "staking": {
       "params": {
-        "unbonding_time": "1814400s",
+        "unbonding_time": "1209600s",
         "max_validators": 40,
         "max_entries": 7,
         "historical_entries": 10000,
@@ -6063,3 +6383,4 @@
     }
   }
 }
+
