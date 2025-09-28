@@ -47,7 +47,7 @@ const (
 	// Default configuration
 	WARDEND             = "wardend"
 	WARDDIR             = ".warden"
-	NETWORK             = "testlaunch_123123-1"
+	NETWORK             = "warden_8765-1"
 	TIMEOUT             = 60 // seconds
 	REQ_FEE             = "180000000000000000"
 	LOGS_FILE           = "logs.txt"
