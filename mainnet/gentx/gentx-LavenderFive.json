@@ -51,7 +51,12 @@
       }
     ],
     "fee": {
-      "amount": [],
+      "amount": [
+        {
+          "denom": "award",
+          "amount": "1000000000000000000"
+        }
+      ],
       "gas_limit": "200000",
       "payer": "",
       "granter": ""
@@ -59,6 +64,6 @@
     "tip": null
   },
   "signatures": [
-    "z6ySgcjsK8Ao/7+s1oqvCcas0ZPQgLPld2dIlNNiFW9ULfDAt/ceUOLJOJ0NoWyqJzoLC/RItXsjEN+7e8AHEAA="
+    "PTs3M9cr4WUU7swNT+cg1Q0Du15OC8q1qBoPCtIa5FUeJwhNmZVejNPUo+jEZF0yC5wVuB7GrWaD1TazzvECrQE="
   ]
 }
