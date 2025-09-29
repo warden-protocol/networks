@@ -258,7 +258,7 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1760918410"
+            "end_time": "1761523210"
           }
         },
         {
@@ -292,7 +292,7 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1776643210"
+            "end_time": "1777248010"
           }
         },
         {
@@ -312,7 +312,7 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1760918410"
+            "end_time": "1761523210"
           }
         },
         {
@@ -332,9 +332,9 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1839801610"
+            "end_time": "1840406410"
           },
-          "start_time": "1760918410"
+          "start_time": "1761523210"
         },
         {
           "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
@@ -353,9 +353,9 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1839801610"
+            "end_time": "1840406410"
           },
-          "start_time": "1760918410"
+          "start_time": "1761523210"
         },
         {
           "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
@@ -374,9 +374,9 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1792454410"
+            "end_time": "1793059210"
           },
-          "start_time": "1760918410"
+          "start_time": "1761523210"
         },
         {
           "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
@@ -395,9 +395,9 @@
             ],
             "delegated_free": [],
             "delegated_vesting": [],
-            "end_time": "1792454410"
+            "end_time": "1793059210"
           },
-          "start_time": "1760918410"
+          "start_time": "1761523210"
         }
       ]
     },
