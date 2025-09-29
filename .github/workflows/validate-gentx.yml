@@ -13,7 +13,7 @@ on:
         default: 'mainnet'
 
 env:
-  WARDEND_VERSION: 'v0.7.0-rc5'
+  WARDEND_VERSION: 'v0.7.0'
   GO_VERSION: '1.25'
   DAGGER_NO_NAG: '1'
 

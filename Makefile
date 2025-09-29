@@ -51,7 +51,7 @@ validate-custom: ## Validate with custom parameters (use NETWORK, WARDEND_VERSIO
 	@cd ci && dagger call validate-all-gentx-together \
 		--source=.. \
 		--network=$(or $(NETWORK),mainnet) \
-		--wardend-version=$(or $(WARDEND_VERSION),v0.7.0-rc3) \
+		--wardend-version=$(or $(WARDEND_VERSION),v0.7.0) \
 		--go-version=$(or $(GO_VERSION),1.24)
 
 # Development targets

@@ -21,7 +21,7 @@ func (m *Ci) ValidateGentxCli(
 	network string,
 	// Wardend version to use for validation
 	// +optional
-	// +default="v0.7.0-rc3"
+	// +default="v0.7.0"
 	wardendVersion string,
 	// Go version for building check-genesis tool
 	// +optional
@@ -55,7 +55,7 @@ func (m *Ci) ValidateGentx(
 	network string,
 	// Wardend version to use for validation
 	// +optional
-	// +default="v0.7.0-rc3"
+	// +default="v0.7.0"
 	wardendVersion string,
 	// Go version for building check-genesis tool
 	// +optional
@@ -158,7 +158,11 @@ type FileValidationResult struct {
 }
 
 // getGentxFiles returns the list of gentx files to validate
-func (m *Ci) getGentxFiles(ctx context.Context, source *dagger.Directory, network string) ([]string, error) {
+func (m *Ci) getGentxFiles(
+	ctx context.Context,
+	source *dagger.Directory,
+	network string,
+) ([]string, error) {
 	if network != "mainnet" {
 		return nil, fmt.Errorf("only mainnet network is supported")
 	}
@@ -260,7 +264,7 @@ func (m *Ci) RunLocalValidation(
 	network string,
 	// Wardend version to use for validation
 	// +optional
-	// +default="v0.7.0-rc3"
+	// +default="v0.7.0"
 	wardendVersion string,
 	// Go version for building check-genesis tool
 	// +optional
@@ -317,7 +321,7 @@ func (m *Ci) CopyAllGentx(
 	network string,
 	// Wardend version to use for validation
 	// +optional
-	// +default="v0.7.0-rc3"
+	// +default="v0.7.0"
 	wardendVersion string,
 ) (*dagger.Container, error) {
 	// Get the list of gentx files
@@ -372,7 +376,7 @@ func (m *Ci) ValidateAllGentxTogether(
 	network string,
 	// Wardend version to use for validation
 	// +optional
-	// +default="v0.7.0-rc3"
+	// +default="v0.7.0"
 	wardendVersion string,
 	// Go version for building check-genesis tool
 	// +optional
@@ -421,7 +425,12 @@ func (m *Ci) ValidateAllGentxTogether(
 		debugResult := validationResult.WithExec([]string{"cat", "logs.txt"})
 		debugLogs, _ := debugResult.Stdout(ctx)
 
-		return fmt.Sprintf("❌ Validation FAILED:\n%s\n\nStderr:\n%s\n\nDebug logs:\n%s", stdout, stderr, debugLogs), stdoutErr
+		return fmt.Sprintf(
+			"❌ Validation FAILED:\n%s\n\nStderr:\n%s\n\nDebug logs:\n%s",
+			stdout,
+			stderr,
+			debugLogs,
+		), stdoutErr
 	}
 
 	return fmt.Sprintf("✅ Validation PASSED:\n%s", stdout), nil
@@ -466,7 +475,11 @@ func (m *Ci) TestCheckGenesisTool(
 	usageOutput, _ := usageContainer.Stdout(ctx)
 	usageError, _ := usageContainer.Stderr(ctx)
 
-	result := fmt.Sprintf("✅ check-genesis tool build and test successful:\n\nFile details:\n%s\nUsage output:\n%s", lsOutput, usageOutput)
+	result := fmt.Sprintf(
+		"✅ check-genesis tool build and test successful:\n\nFile details:\n%s\nUsage output:\n%s",
+		lsOutput,
+		usageOutput,
+	)
 	if usageError != "" {
 		result += fmt.Sprintf("\nUsage stderr:\n%s", usageError)
 	}
